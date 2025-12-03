@@ -212,5 +212,3 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 
 
 
-Muhammad-Azan-1/Physical-AI-Humanoid-Robotics-Book
-
