@@ -1,0 +1,124 @@
+.capstoneSection {
+    padding: 6rem 2rem;
+    background: var(--section-bg-alt);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionLabel {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .sectionLabel {
+    color: var(--color-primary-400);
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4rem;
+    color: var(--ifm-heading-color);
+}
+
+.challengeGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .challengeGrid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+.colTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--ifm-heading-color);
+}
+
+.requirementsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirementsList li {
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+    color: var(--color-zinc-700);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+[data-theme="dark"] .requirementsList li {
+    color: var(--color-zinc-300);
+}
+
+.interactionCard {
+    border-radius: 12px;
+    padding: 2rem;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.9rem;
+
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+}
+
+.userMessage {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px dashed var(--color-zinc-200);
+    color: var(--color-zinc-800);
+}
+
+[data-theme="dark"] .userMessage {
+    border-bottom: 1px dashed var(--color-zinc-800);
+    color: var(--color-zinc-200);
+}
+
+.speakerLabel {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .speakerLabel {
+    color: var(--color-primary-400);
+}
+
+.robotResponse ol {
+    padding-left: 1.5rem;
+    margin: 0;
+    color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .robotResponse ol {
+    color: var(--color-zinc-400);
+}
+
+.robotResponse li {
+    margin-bottom: 0.5rem;
+}

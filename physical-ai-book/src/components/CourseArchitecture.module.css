@@ -1,0 +1,114 @@
+.architectureSection {
+    padding: 6rem 2rem;
+    background: var(--section-bg-alt);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionLabel {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .sectionLabel {
+    color: var(--color-primary-400);
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4rem;
+    color: var(--ifm-heading-color);
+}
+
+.layersGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .layersGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.layerCard {
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+}
+
+.layerCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--color-primary-500);
+}
+
+.layerHeader {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-zinc-200);
+}
+
+[data-theme="dark"] .layerHeader {
+    border-bottom: 1px solid var(--color-zinc-800);
+}
+
+.layerLabel {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-zinc-500);
+}
+
+.layerTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ifm-heading-color);
+}
+
+.layerItems {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.layerItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .layerItem {
+    color: var(--color-zinc-400);
+}
+
+.checkIcon {
+    color: #10b981;
+    /* Success Green */
+    font-weight: 700;
+}

@@ -1,0 +1,178 @@
+.curriculumSection {
+  padding: 6rem 2rem;
+  background: var(--section-bg-alt);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionLabel {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .sectionLabel {
+  color: var(--color-primary-400);
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 4rem;
+  color: var(--ifm-heading-color);
+}
+
+.modulesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .modulesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.moduleCard {
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.moduleCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--color-primary-500);
+}
+
+.moduleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.moduleNumber {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .moduleNumber {
+  color: var(--color-primary-400);
+}
+
+.weeksBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--color-zinc-100);
+  color: var(--color-zinc-700);
+}
+
+[data-theme="dark"] .weeksBadge {
+  background: var(--color-zinc-800);
+  color: var(--color-zinc-300);
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.moduleIcon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.moduleTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--ifm-heading-color);
+}
+
+.moduleDescription {
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .moduleDescription {
+  color: var(--color-zinc-400);
+}
+
+.topicsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  flex-grow: 1;
+}
+
+.topicsList li {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .topicsList li {
+  color: var(--color-zinc-400);
+}
+
+.topicsList li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary-500);
+  font-weight: 700;
+}
+
+.moduleLink {
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .moduleLink {
+  color: var(--color-primary-400);
+}
+
+.moduleLink:hover {
+  text-decoration: none;
+  transform: translateX(4px);
+  color: var(--color-primary-700);
+}
+
+[data-theme="dark"] .moduleLink:hover {
+  color: var(--color-primary-300);
+}

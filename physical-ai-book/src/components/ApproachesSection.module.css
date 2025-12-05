@@ -1,0 +1,171 @@
+.approachesSection {
+  padding: 6rem 2rem;
+  /* Light mode */
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+[data-theme="dark"] .approachesSection {
+  background: linear-gradient(180deg, #1a1a1f 0%, #0f0f12 100%);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionLabel {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+  /* Light mode */
+  color: #0066cc;
+}
+
+[data-theme="dark"] .sectionLabel {
+  color: #60a5fa;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  /* Light mode */
+  color: #0f0f1a;
+}
+
+[data-theme="dark"] .sectionTitle {
+  color: #f1f5f9;
+}
+
+.sectionDescription {
+  text-align: center;
+  font-size: 1.1rem;
+  max-width: 650px;
+  margin: 0 auto 3rem;
+  /* Light mode */
+  color: #4a5568;
+}
+
+[data-theme="dark"] .sectionDescription {
+  color: #94a3b8;
+}
+
+.approachesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .approachesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.approachCard {
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  /* Light mode */
+  background: #ffffff;
+  border: 1px solid rgba(0, 31, 63, 0.08);
+}
+
+.approachCard:hover {
+  transform: translateY(-4px);
+  /* Light mode */
+  border-color: rgba(0, 102, 204, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 31, 63, 0.1);
+}
+
+[data-theme="dark"] .approachCard {
+  background: #1a1a1f;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .approachCard:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.25rem;
+  /* Light mode */
+  background: rgba(0, 102, 204, 0.1);
+  color: #0066cc;
+}
+
+[data-theme="dark"] .badge {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+.cardTitle {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  /* Light mode */
+  color: #0f0f1a;
+}
+
+[data-theme="dark"] .cardTitle {
+  color: #f1f5f9;
+}
+
+.cardDescription {
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  /* Light mode */
+  color: #4a5568;
+}
+
+[data-theme="dark"] .cardDescription {
+  color: #94a3b8;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.featureList li {
+  padding: 0.5rem 0;
+  padding-left: 1.75rem;
+  position: relative;
+  font-size: 0.9rem;
+  /* Light mode */
+  color: #4a5568;
+}
+
+.featureList li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  /* Light mode */
+  color: #0066cc;
+}
+
+[data-theme="dark"] .featureList li {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .featureList li::before {
+  color: #22d3ee;
+}

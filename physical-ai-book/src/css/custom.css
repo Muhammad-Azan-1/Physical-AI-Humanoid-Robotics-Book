@@ -1,30 +1,412 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Physical AI & Humanoid Robotics Book - Custom Styles
+ * Design System: "Physical Intelligence" (Adapted from Panaversity AI Native)
  */
 
-/* You can override the default Infima variables here. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ============================================================================
+   ROOT VARIABLES - Light Mode (Polar Night Theme)
+   ============================================================================ */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* Core Colors - Zinc Scale */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
+
+  /* Brand Colors - Cyan/Teal for Physical AI */
+  --color-primary-50: #ecfeff;
+  --color-primary-100: #cffafe;
+  --color-primary-200: #a5f3fc;
+  --color-primary-300: #67e8f9;
+  --color-primary-400: #22d3ee;
+  --color-primary-500: #06b6d4;
+  --color-primary-600: #0891b2;
+  --color-primary-700: #0e7490;
+  --color-primary-800: #155e75;
+  --color-primary-900: #164e63;
+
+  /* Docusaurus Overrides - Light Mode */
+  --ifm-color-primary: var(--color-primary-600);
+  --ifm-color-primary-dark: var(--color-primary-700);
+  --ifm-color-primary-darker: var(--color-primary-800);
+  --ifm-color-primary-darkest: var(--color-primary-900);
+  --ifm-color-primary-light: var(--color-primary-500);
+  --ifm-color-primary-lighter: var(--color-primary-400);
+  --ifm-color-primary-lightest: var(--color-primary-300);
+
+  --ifm-background-color: #fcfcfc;
+  --ifm-background-surface-color: #ffffff;
+
+  --ifm-font-color-base: var(--color-zinc-900);
+  --ifm-font-color-secondary: var(--color-zinc-600);
+  --ifm-heading-color: var(--color-zinc-950);
+
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.85);
+  --ifm-navbar-shadow: 0 1px 0 var(--color-zinc-200);
+  --ifm-navbar-height: 64px;
+
+  --ifm-border-color: var(--color-zinc-200);
+
+  /* Custom Design Tokens */
+  --card-bg: #ffffff;
+  --card-border: var(--color-zinc-200);
+  --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+
+  --section-bg-alt: var(--color-zinc-50);
+
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', monospace;
+
+  --ifm-heading-font-weight: 700;
+  --ifm-global-radius: 8px;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+/* ============================================================================
+   DARK MODE - "Midnight Scholar" Theme
+   ============================================================================ */
+[data-theme="dark"] {
+  --ifm-color-primary: var(--color-primary-400);
+  --ifm-color-primary-dark: var(--color-primary-500);
+  --ifm-color-primary-darker: var(--color-primary-600);
+  --ifm-color-primary-darkest: var(--color-primary-700);
+  --ifm-color-primary-light: var(--color-primary-300);
+  --ifm-color-primary-lighter: var(--color-primary-200);
+  --ifm-color-primary-lightest: var(--color-primary-100);
+
+  --ifm-background-color: var(--color-zinc-950);
+  --ifm-background-surface-color: var(--color-zinc-900);
+
+  --ifm-font-color-base: var(--color-zinc-100);
+  --ifm-font-color-secondary: var(--color-zinc-400);
+  --ifm-heading-color: #ffffff;
+
+  --ifm-navbar-background-color: rgba(9, 9, 11, 0.85);
+  --ifm-navbar-shadow: 0 1px 0 var(--color-zinc-800);
+
+  --ifm-border-color: var(--color-zinc-800);
+
+  /* Custom Design Tokens */
+  --card-bg: var(--color-zinc-900);
+  --card-border: var(--color-zinc-800);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+
+  --section-bg-alt: var(--color-zinc-900);
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ============================================================================ */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced Card Styling */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
+  border-radius: var(--ifm-global-radius);
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--color-primary-300);
+}
+
+[data-theme='dark'] .card:hover {
+  border-color: var(--color-zinc-700);
+}
+
+/* General Button Polish */
+.button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+}
+
+.button--primary {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3) !important;
+}
+
+/* Navbar Polish */
+.navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.navbar__title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+/* Navbar Items Alignment */
+.navbar__items--right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Navbar Buttons */
+.navbar__item.button {
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+.navbar__item.button--secondary.margin-right--sm {
+  margin-right: 0.25rem !important;
+  margin-left: 0.5rem;
+}
+
+/* Sign In (Secondary) */
+.navbar__item.button--secondary {
+  background: transparent;
+  border: 1px solid var(--ifm-border-color);
+  color: var(--ifm-font-color-base);
+}
+
+.navbar__item.button--secondary:hover {
+  background: var(--ifm-background-surface-color);
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+}
+
+/* Sign Up (Primary Accent) */
+.navbar__item.button--primary {
+  background: var(--ifm-color-primary);
+  border: 1px solid var(--ifm-color-primary);
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .navbar__item.button--primary {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .navbar__item.button--primary {
+  color: var(--color-zinc-950) !important;
+}
+
+.navbar__item.button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+/* Theme Toggle Transition */
+.clean-btn {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 0.5rem;
+}
+
+.clean-btn:hover {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* ============================================================================
+   UTILITIES
+   ============================================================================ */
+.text-gradient {
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--color-primary-300) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  background: var(--color-zinc-100);
+  border: 1px solid var(--color-zinc-200);
+  color: var(--color-primary-700);
+}
+
+[data-theme="dark"] code {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-primary-300);
+}
+
+/* ============================================================================
+   FOOTER STYLES
+   ============================================================================ */
+.footer {
+  background: var(--color-zinc-100) !important;
+  /* Light gray for light mode */
+  padding: 48px 0 0 0 !important;
+  font-family: var(--ifm-font-family-base);
+  border-top: 1px solid var(--color-zinc-200) !important;
+}
+
+[data-theme="dark"] .footer {
+  background: #09090b !important;
+  /* Deep black for dark mode */
+  border-top: 1px solid #27272a !important;
+}
+
+.footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Footer Links Container - 4 Column Grid */
+.footer__links {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 48px !important;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 768px) {
+  .footer__links {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 32px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__links {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* Footer Column */
+.footer__col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer Title with Underline */
+.footer__title {
+  color: var(--color-zinc-900) !important;
+  /* Dark text for light mode */
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  /* 14px */
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin-bottom: 16px !important;
+  padding-bottom: 12px !important;
+  position: relative;
+}
+
+[data-theme="dark"] .footer__title {
+  color: #f4f4f5 !important;
+  /* Light text for dark mode */
+}
+
+.footer__title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 32px;
+  height: 2px;
+  background: #3f3f46;
+  /* Zinc-700 */
+  border-radius: 1px;
+}
+
+/* Footer Items */
+.footer__items {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.footer__item {
+  margin-bottom: 12px !important;
+}
+
+/* Footer Links */
+.footer__link-item {
+  color: var(--color-zinc-600) !important;
+  /* Medium gray for light mode */
+  font-size: 0.875rem !important;
+  /* 14px */
+  text-decoration: none !important;
+  transition: color 0.2s ease !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-theme="dark"] .footer__link-item {
+  color: #a1a1aa !important;
+  /* Light gray for dark mode */
+}
+
+.footer__link-item:hover {
+  color: var(--ifm-color-primary) !important;
+  /* Primary color on hover */
+  text-decoration: none !important;
+}
+
+[data-theme="dark"] .footer__link-item:hover {
+  color: #ffffff !important;
+  /* White on hover in dark mode */
+}
+
+/* Copyright Section */
+.footer__bottom {
+  border-top: 1px solid var(--color-zinc-200) !important;
+  padding: 24px 0 !important;
+  margin-top: 0 !important;
+  text-align: center !important;
+}
+
+[data-theme="dark"] .footer__bottom {
+  border-top: 1px solid #27272a !important;
+}
+
+.footer__copyright {
+  color: var(--color-zinc-500) !important;
+  font-size: 0.875rem !important;
+  /* 14px */
+}
+
+[data-theme="dark"] .footer__copyright {
+  color: #a1a1aa !important;
+}
+
+/* Make "Panaversity" in copyright appear as link */
+.footer__copyright a {
+  color: var(--color-zinc-900);
+  text-decoration: none;
+}
+
+[data-theme="dark"] .footer__copyright a {
+  color: #ffffff;
+}
+
+.footer__copyright a:hover {
+  text-decoration: underline;
 }

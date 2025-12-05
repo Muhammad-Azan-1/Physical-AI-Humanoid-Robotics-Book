@@ -1,0 +1,187 @@
+.hardwareSection {
+    padding: 6rem 2rem;
+    background: var(--section-bg-alt);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionLabel {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .sectionLabel {
+    color: var(--color-primary-400);
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    color: var(--ifm-heading-color);
+}
+
+.sectionNote {
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 4rem;
+    font-style: italic;
+    color: var(--color-zinc-500);
+}
+
+.tiersGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .tiersGrid {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+.tierCard {
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+}
+
+.tierCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--color-primary-500);
+}
+
+.popularTier {
+    border: 2px solid var(--color-primary-600);
+    transform: scale(1.02);
+}
+
+[data-theme="dark"] .popularTier {
+    border: 2px solid var(--color-primary-500);
+}
+
+.popularTier:hover {
+    transform: scale(1.02) translateY(-4px);
+}
+
+.popularBadge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    background: var(--color-primary-600);
+    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .popularBadge {
+    background: var(--color-primary-500);
+    color: var(--color-zinc-950);
+}
+
+.tierTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    color: var(--ifm-heading-color);
+}
+
+.tierPrice {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary-700);
+}
+
+[data-theme="dark"] .tierPrice {
+    color: var(--color-primary-300);
+}
+
+.tierSection {
+    margin-bottom: 1.5rem;
+}
+
+.sectionHeader {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    color: var(--color-zinc-500);
+}
+
+.itemList,
+.checkList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.itemList li {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1rem;
+    position: relative;
+    color: var(--color-zinc-700);
+}
+
+[data-theme="dark"] .itemList li {
+    color: var(--color-zinc-300);
+}
+
+.itemList li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary-500);
+}
+
+.checkList li {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .checkList li {
+    color: var(--color-zinc-400);
+}
+
+.checkList li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    /* Success Green */
+    font-weight: 700;
+}

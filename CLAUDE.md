@@ -212,3 +212,10 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 
 
 
+
+## Active Technologies
+- Node.js (LTS), TypeScrip + Docusaurus, Reac (001-homepage-humanoid-book)
+- N/A (Static site) (001-homepage-humanoid-book)
+
+## Recent Changes
+- 001-homepage-humanoid-book: Added Node.js (LTS), TypeScrip + Docusaurus, Reac

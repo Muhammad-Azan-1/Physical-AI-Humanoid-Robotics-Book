@@ -1,12 +1,13 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'Physical AI & Humanoid Robotics',
+  tagline: 'From Simulation to Embodied Intelligence',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -15,17 +16,48 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://physical-ai-robotics.example.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'humanoid-robotics-book', // Usually your GitHub org/user name.
+  projectName: 'physical-ai-book', // Usually your repo name.
 
   onBrokenLinks: 'throw',
+
+  markdown: {
+    format: 'mdx',
+    mermaid: true,
+    preprocessor: ({ filePath, fileContent }) => {
+      return fileContent;
+    },
+    mdx1Compat: {
+      comments: true,
+      admonitions: true,
+      headingIds: true,
+    },
+  },
+
+  // Useful for SEO
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'description',
+        content: 'A comprehensive guide to Physical AI and Humanoid Robotics, covering simulation, ROS 2, and real-world deployment.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'keywords',
+        content: 'humanoid robotics, physical ai, ros 2, simulation, reinforcement learning, isaac sim',
+      },
+    },
+  ],
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -40,11 +72,13 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          sidebarPath: require.resolve('./sidebars.ts'),
+          // Specify the sidebar ID if you have multiple sidebars
+          // sidebar: 'mainSidebar',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/humanoid-robotics-book/physical-ai-book/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -55,7 +89,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/humanoid-robotics-book/physical-ai-book/tree/main/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -75,23 +109,31 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'My Site',
+      title: 'Physical AI & Humanoid Robotics',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Physical AI & Humanoid Robotics Logo',
         src: 'img/logo.svg',
       },
+      hideOnScroll: false,
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'mainSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Book',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        { type: 'search', position: 'right' },
         {
-          href: 'https://github.com/facebook/docusaurus',
-          label: 'GitHub',
+          to: '/signin',
+          label: 'Sign In',
           position: 'right',
+          className: 'button button--secondary button--sm margin-right--sm',
+        },
+        {
+          to: '/signup',
+          label: 'Sign Up',
+          position: 'right',
+          className: 'button button--primary button--sm',
         },
       ],
     },
@@ -99,46 +141,75 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'LEARN',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Start Your Journey',
+              to: '/docs/intro',
+            },
+            {
+              label: 'Full Curriculum',
+              to: '/docs/module1/module1-week1-chapter1',
+            },
+            {
+              label: 'Learning Path',
               to: '/docs/intro',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'COMMUNITY',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'YouTube',
+              href: 'https://www.youtube.com/@panaversity',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'LinkedIn',
+              href: 'https://www.linkedin.com/company/panaversity',
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Instagram',
+              href: 'https://www.instagram.com/panaversity',
+            },
+            {
+              label: 'Facebook',
+              href: 'https://www.facebook.com/panaversity',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'RESOURCES',
           items: [
             {
-              label: 'Blog',
-              to: '/blog',
+              label: 'GitHub Repository',
+              href: 'https://github.com/panaversity',
             },
             {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              label: 'Physical AI Specification',
+              to: '/requirements',
+            },
+            {
+              label: 'Example Projects',
+              to: '/projects',
+            },
+          ],
+        },
+        {
+          title: 'ABOUT',
+          items: [
+            {
+              label: 'Panaversity',
+              href: 'https://www.panaversity.org',
+            },
+            {
+              label: 'Our Mission',
+              href: 'https://www.panaversity.org/about',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Panaversity • Physical AI & Humanoid Robotics • Free & Open Source`,
     },
     prism: {
       theme: prismThemes.github,
