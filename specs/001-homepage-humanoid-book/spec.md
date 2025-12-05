@@ -87,8 +87,8 @@ As a prospective reader, I want to understand the different hardware tiers (Tier
 
 ### Edge Cases
 
--   The home page should be responsive across mobile, tablet, and desktop devices.
--   The home page should load quickly (<2s on 3G) even on slow network connections.
+-   The home page should be responsive across mobile, tablet, and desktop devices, with specific breakpoints at 640px (mobile), 768px (tablet), and 1024px (desktop).
+-   The home page should load quickly (<2s on 3G) on common mobile and desktop browsers, with a target Largest Contentful Paint (LCP) of less than 1.5 seconds.
 
 ## Requirements *(mandatory)*
 

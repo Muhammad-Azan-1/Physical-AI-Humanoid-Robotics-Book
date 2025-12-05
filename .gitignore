@@ -31,3 +31,13 @@ build/
 .DS_Store
 .Trashes
 Thumbs.db
+
+# Docusaurus
+.docusaurus/
+build/
+
+# Testing
+coverage/
+
+# TypeScript
+*.tsbuildinfo

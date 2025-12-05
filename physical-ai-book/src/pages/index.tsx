@@ -1,43 +1,33 @@
-import type {ReactNode} from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import React from 'react';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
-import Heading from '@theme/Heading';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-import styles from './index.module.css';
+import HeroSection from '@site/src/components/HeroSection';
+import WhyHumanoidsSection from '@site/src/components/WhyHumanoidsSection';
+import CourseArchitecture from '@site/src/components/CourseArchitecture';
+import CurriculumPreviewSection from '@site/src/components/CurriculumPreviewSection';
+import LearningPathSection from '@site/src/components/LearningPathSection';
+import HardwareRequirements from '@site/src/components/HardwareRequirements';
+import Assessments from '@site/src/components/Assessments';
+import CapstoneChallenge from '@site/src/components/CapstoneChallenge';
+import StartJourneySection from '@site/src/components/StartJourneySection';
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
-  return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-export default function Home(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
+export default function Home() {
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
+      title="Physical AI & Humanoid Robotics"
+      description="Master the art of building intelligent humanoid robots — from simulation to real-world deployment using ROS 2, Isaac Sim, and cutting-edge AI.">
       <main>
-        <HomepageFeatures />
+        <HeroSection />
+        <WhyHumanoidsSection />
+        <CourseArchitecture />
+        <CurriculumPreviewSection />
+        <LearningPathSection />
+        <HardwareRequirements />
+        <Assessments />
+        <CapstoneChallenge />
+        <StartJourneySection />
       </main>
     </Layout>
   );

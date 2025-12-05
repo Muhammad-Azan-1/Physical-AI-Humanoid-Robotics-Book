@@ -1,0 +1,123 @@
+.assessmentsSection {
+    padding: 6rem 2rem;
+    background: var(--ifm-background-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sectionLabel {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .sectionLabel {
+    color: var(--color-primary-400);
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4rem;
+    color: var(--ifm-heading-color);
+}
+
+.assessmentsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .assessmentsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.assessmentCard {
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+}
+
+.assessmentCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--color-primary-500);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.moduleLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-zinc-500);
+}
+
+.weightLabel {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: var(--color-zinc-100);
+    color: var(--color-primary-700);
+}
+
+[data-theme="dark"] .weightLabel {
+    background: var(--color-zinc-800);
+    color: var(--color-primary-300);
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--ifm-heading-color);
+}
+
+.assessmentItems {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.assessmentItems li {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .assessmentItems li {
+    color: var(--color-zinc-400);
+}
+
+.assessmentItems li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--color-primary-500);
+    font-weight: 700;
+}

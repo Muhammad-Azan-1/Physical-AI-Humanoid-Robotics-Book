@@ -1,0 +1,220 @@
+.heroSection {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+  /* Light mode: Subtle gradient from white to very light zinc */
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-zinc-50) 100%);
+}
+
+[data-theme="dark"] .heroSection {
+  /* Dark mode: Deep zinc gradient */
+  background: linear-gradient(180deg, var(--color-zinc-950) 0%, var(--color-zinc-900) 100%);
+}
+
+/* Background Glow Effect */
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 80%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+  z-index: 0;
+}
+
+[data-theme="dark"] .heroSection::before {
+  background: radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.badgeRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.heroBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  /* Pill shape */
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--color-primary-700);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+[data-theme="dark"] .heroBadge {
+  color: var(--color-primary-300);
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.heroTitle {
+  font-size: clamp(3rem, 7vw, 5rem);
+  /* Larger, more impactful */
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  color: var(--color-zinc-950);
+}
+
+[data-theme="dark"] .heroTitle {
+  color: #ffffff;
+}
+
+/* Gradient Text for "Humanoid Robotics" part if wrapped in span, 
+   or applied to whole title if desired. Here applying to whole title for impact */
+.heroTitle {
+  background: linear-gradient(180deg, var(--color-zinc-900) 0%, var(--color-zinc-600) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="dark"] .heroTitle {
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-zinc-400) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroTagline {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-primary-600);
+}
+
+[data-theme="dark"] .heroTagline {
+  color: var(--color-primary-400);
+}
+
+.heroSubtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+  max-width: 750px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+  color: var(--color-zinc-600);
+}
+
+[data-theme="dark"] .heroSubtitle {
+  color: var(--color-zinc-400);
+}
+
+.featureBadges {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.featureBadges span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-zinc-100);
+  border: 1px solid var(--color-zinc-200);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-zinc-700);
+}
+
+[data-theme="dark"] .featureBadges span {
+  background: var(--color-zinc-900);
+  border: 1px solid var(--color-zinc-800);
+  color: var(--color-zinc-300);
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.buttonPrimary {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none !important;
+
+  background: var(--color-zinc-900);
+  color: #ffffff !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.buttonPrimary:hover {
+  transform: translateY(-2px);
+  background: var(--color-zinc-800);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .buttonPrimary {
+  background: var(--color-primary-500);
+  color: var(--color-zinc-950) !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+[data-theme="dark"] .buttonPrimary:hover {
+  background: var(--color-primary-400);
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+}
+
+.buttonSecondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none !important;
+
+  background: transparent;
+  color: var(--color-zinc-900) !important;
+  border: 1px solid var(--color-zinc-300);
+}
+
+.buttonSecondary:hover {
+  background: var(--color-zinc-100);
+  border-color: var(--color-zinc-400);
+}
+
+[data-theme="dark"] .buttonSecondary {
+  color: var(--color-zinc-100) !important;
+  border: 1px solid var(--color-zinc-700);
+}
+
+[data-theme="dark"] .buttonSecondary:hover {
+  background: var(--color-zinc-800);
+  border-color: var(--color-zinc-600);
+}
