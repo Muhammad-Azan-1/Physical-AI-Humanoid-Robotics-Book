@@ -35,7 +35,7 @@ export default function HeroSection() {
           </Link>
           <Link
             className={styles.buttonSecondary}
-            to="/docs/module1/module1-week1-chapter1">
+            to="/docs/module1">
             Explore Modules
           </Link>
         </div>

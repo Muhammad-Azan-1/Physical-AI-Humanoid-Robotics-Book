@@ -167,3 +167,63 @@
 [data-theme="dark"] .quickLink:hover {
   color: var(--color-primary-400);
 }
+
+/* Mobile responsive buttons - 500px to 640px */
+@media (max-width: 640px) and (min-width: 501px) {
+  .ctaSection {
+    padding: 5rem 1.5rem;
+  }
+
+  .ctaButtons {
+    gap: 1rem;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Mobile responsive buttons - Below 500px */
+@media (max-width: 500px) {
+  .ctaSection {
+    padding: 4rem 1rem;
+  }
+
+  .ctaButtons {
+    gap: 0.75rem;
+    flex-direction: column;
+    margin-bottom: 2.5rem;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ctaTitle {
+    font-size: 1.75rem;
+  }
+
+  .ctaSubtitle {
+    font-size: 1rem;
+  }
+
+  .ctaDescription {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .quickLinks {
+    gap: 1rem;
+    padding-top: 2rem;
+  }
+
+  .quickLink {
+    font-size: 0.85rem;
+  }
+}

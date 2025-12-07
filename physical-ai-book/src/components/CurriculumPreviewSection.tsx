@@ -14,7 +14,7 @@ interface ModuleCardProps {
 
 function ModuleCard({ number, title, description, link, duration, icon, topics }: ModuleCardProps) {
   return (
-    <div className={styles.moduleCard}>
+    <Link to={link} className={styles.moduleCard}>
       <div className={styles.moduleHeader}>
         <span className={styles.moduleNumber}>Module {number}</span>
         <span className={styles.weeksBadge}>{duration}</span>
@@ -29,10 +29,10 @@ function ModuleCard({ number, title, description, link, duration, icon, topics }
           <li key={idx}>{topic}</li>
         ))}
       </ul>
-      <Link to={link} className={styles.moduleLink}>
+      <div className={styles.moduleLink}>
         Explore Module →
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 }
 
@@ -42,7 +42,7 @@ export default function CurriculumPreviewSection() {
       number: 1,
       title: 'The Robotic Nervous System',
       description: 'ROS 2 Fundamentals & Physical AI Foundations',
-      link: '/docs/module1/module1-week1-chapter1',
+      link: '/docs/module1',
       duration: '5 Weeks',
       icon: '🧠',
       topics: [
@@ -55,7 +55,7 @@ export default function CurriculumPreviewSection() {
       number: 2,
       title: 'The Digital Twin',
       description: 'Simulation & Environment Building',
-      link: '/docs/module2/module2-week1-chapter1',
+      link: '/docs/module2',
       duration: '2 Weeks',
       icon: '🎮',
       topics: [
@@ -68,7 +68,7 @@ export default function CurriculumPreviewSection() {
       number: 3,
       title: 'The AI-Robot Brain',
       description: 'NVIDIA Isaac Platform & Advanced Perception',
-      link: '/docs/module3/module3-week1-chapter1',
+      link: '/docs/module3',
       duration: '3 Weeks',
       icon: '🚀',
       topics: [
@@ -79,9 +79,9 @@ export default function CurriculumPreviewSection() {
     },
     {
       number: 4,
-      title: 'Vision-Language-Action',
-      description: 'LLMs Meet Robotics & Conversational AI',
-      link: '/docs/module4/module4-week1-chapter1',
+      title: 'Vision-Language-Action (VLA)',
+      description: 'LLMs, Whisper, and Cognitive Robotics',
+      link: '/docs/module4',
       duration: '3 Weeks',
       icon: '🗣️',
       topics: [

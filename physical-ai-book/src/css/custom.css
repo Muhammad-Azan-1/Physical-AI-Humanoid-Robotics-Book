@@ -1,7 +1,18 @@
 /**
  * Physical AI & Humanoid Robotics Book - Custom Styles
- * Design System: "Physical Intelligence" (Adapted from Panaversity AI Native)
+ * Design System: "Physical Intelligence"
  */
+
+/* Global overflow fix */
+html,
+body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -69,6 +80,64 @@
 
   --ifm-heading-font-weight: 700;
   --ifm-global-radius: 8px;
+}
+
+/* ============================================================================
+   NAVBAR BREAKPOINT OVERRIDE - Show desktop navbar until 720px
+   ============================================================================ */
+
+/* Force ALL navbar items visible above 720px (override Docusaurus 996px breakpoint) */
+@media (min-width: 721px) {
+
+  /* Hide hamburger menu */
+  .navbar__toggle {
+    display: none !important;
+  }
+
+  /* Force all navbar items containers to be visible */
+  .navbar__items {
+    display: flex !important;
+  }
+
+  /* Force all individual navbar items to be visible */
+  .navbar__item,
+  .navbar__link {
+    display: flex !important;
+  }
+
+  /* Ensure the left side items (like Book) are visible */
+  .navbar__items--left {
+    display: flex !important;
+  }
+
+  .navbar__items--left>* {
+    display: flex !important;
+  }
+
+  /* Ensure right side items are visible */
+  .navbar__items--right {
+    display: flex !important;
+  }
+
+  .navbar__items--right>* {
+    display: flex !important;
+  }
+}
+
+/* Show hamburger menu and hide ALL desktop items below 720px */
+@media (max-width: 720px) {
+  .navbar__toggle {
+    display: flex !important;
+  }
+
+  /* Hide ALL navbar items on mobile - they go to sidebar */
+  .navbar__items--right>.navbar__item:not(.navbar__toggle):not([class*="colorModeToggle"]) {
+    display: none !important;
+  }
+
+  .navbar__items--left>.navbar__item:not(.navbar__brand) {
+    display: none !important;
+  }
 }
 
 /* ============================================================================
@@ -159,6 +228,19 @@ html {
   font-weight: 700;
   font-size: 1.1rem;
   letter-spacing: -0.02em;
+}
+
+/* Navbar Logo Sizing */
+.navbar__logo {
+  height: 32px;
+  width: auto;
+  margin-right: 0.5rem;
+}
+
+.navbar__logo img {
+  height: 32px;
+  width: auto;
+  border-radius: 4px;
 }
 
 /* Navbar Items Alignment */
@@ -409,4 +491,415 @@ code {
 
 .footer__copyright a:hover {
   text-decoration: underline;
+}
+
+/* ============================================================================
+   MOBILE RESPONSIVENESS FIXES
+   ============================================================================ */
+
+/* Ensure Navbar Toggle is visible and clickable */
+.navbar__toggle {
+  z-index: 100;
+  margin-right: 0.5rem;
+}
+
+/* Main Navbar Z-Index Fix */
+.navbar {
+  z-index: 100000 !important;
+  /* Increased z-index to ensure visibility on small screens */
+  position: sticky !important;
+  top: 0 !important;
+  isolation: isolate;
+}
+
+/* Ensure main content doesn't overlap navbar */
+main,
+.main-wrapper,
+[class*="docMainContainer"],
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix Mobile Sidebar Z-Index and Background */
+.navbar-sidebar {
+  z-index: 100001 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+  width: 80vw !important;
+  max-width: 350px !important;
+  background: var(--ifm-navbar-background-color) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  border-right: 1px solid var(--ifm-border-color);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+/* When sidebar is shown */
+.navbar-sidebar--show .navbar-sidebar,
+.navbar--sidebar-show .navbar-sidebar {
+  transform: translateX(0) !important;
+}
+
+.navbar-sidebar__backdrop {
+  z-index: 99999 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Fix Buttons in Mobile Sidebar ONLY (not in main navbar) */
+@media (max-width: 996px) {
+
+  .navbar-sidebar .navbar__item.button,
+  .navbar-sidebar .navbar__item.button--primary,
+  .navbar-sidebar .navbar__item.button--secondary,
+  .navbar-sidebar .button,
+  .navbar-sidebar .button--primary,
+  .navbar-sidebar .button--secondary {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--ifm-font-color-base) !important;
+    font-size: 1.05rem;
+    font-weight: 500;
+  }
+
+  .navbar-sidebar .navbar__item.button:hover,
+  .navbar-sidebar .navbar__item.button--primary:hover,
+  .navbar-sidebar .navbar__item.button--secondary:hover,
+  .navbar-sidebar .button:hover,
+  .navbar-sidebar .button--primary:hover,
+  .navbar-sidebar .button--secondary:hover {
+    background: var(--color-zinc-100) !important;
+  }
+
+  [data-theme="dark"] .navbar-sidebar .navbar__item.button:hover,
+  [data-theme="dark"] .navbar-sidebar .navbar__item.button--primary:hover,
+  [data-theme="dark"] .navbar-sidebar .navbar__item.button--secondary:hover,
+  [data-theme="dark"] .navbar-sidebar .button:hover,
+  [data-theme="dark"] .navbar-sidebar .button--primary:hover,
+  [data-theme="dark"] .navbar-sidebar .button--secondary:hover {
+    background: var(--color-zinc-800) !important;
+  }
+
+  /* Keep navbar buttons normal sized */
+  .navbar>.container>.navbar__items .navbar__item.button {
+    width: auto !important;
+  }
+
+  /* Ensure the mobile menu items have enough spacing */
+  .menu__list-item {
+    margin-bottom: 0.25rem;
+  }
+
+  /* Improve link styling in sidebar */
+  .navbar-sidebar .menu__link {
+    font-size: 1.05rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--ifm-global-radius);
+    color: var(--ifm-font-color-base);
+    font-weight: 500;
+  }
+
+  .navbar-sidebar .menu__link:hover,
+  .navbar-sidebar .menu__link--active {
+    background-color: var(--color-zinc-100);
+    color: var(--ifm-color-primary);
+  }
+
+  [data-theme="dark"] .navbar-sidebar .menu__link:hover,
+  [data-theme="dark"] .navbar-sidebar .menu__link--active {
+    background-color: var(--color-zinc-800);
+  }
+}
+
+/* Fix Hero Section on Mobile */
+@media (max-width: 768px) {
+  .heroSection {
+    min-height: auto;
+    padding: 4rem 1rem;
+  }
+
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Fix Content Navigation (TOC) on Mobile - "On This Page" */
+/* Disable the unusual transform animations */
+
+.tocCollapsible,
+.tocCollapsibleButton,
+.tocCollapsibleContent,
+[class*="tocCollapsible"] {
+  transform: none !important;
+  animation: none !important;
+}
+
+/* Basic styling */
+.tocCollapsible {
+  position: relative;
+  z-index: 100;
+}
+
+.tocCollapsibleButton {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Arrow icon - prevent rotation animation */
+.tocCollapsibleButton svg,
+.tocCollapsibleButton::after {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Table of contents links */
+.table-of-contents__link:hover {
+  color: var(--ifm-color-primary);
+}
+
+/* ============================================================================
+   MOBILE TYPOGRAPHY - 500px to 640px (Slightly smaller)
+   ============================================================================ */
+@media (max-width: 640px) and (min-width: 501px) {
+
+  /* Headings - Slightly smaller */
+  h1,
+  .markdown h1 {
+    font-size: 1.9rem !important;
+  }
+
+  h2,
+  .markdown h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3,
+  .markdown h3 {
+    font-size: 1.3rem !important;
+  }
+
+  h4,
+  .markdown h4 {
+    font-size: 1.15rem !important;
+  }
+
+  /* Body text - slightly smaller */
+  p,
+  .markdown p,
+  li,
+  .markdown li {
+    font-size: 0.98rem !important;
+  }
+
+  /* Doc page title */
+  .theme-doc-markdown h1:first-child {
+    font-size: 1.8rem !important;
+  }
+
+  /* Code blocks */
+  pre,
+  code {
+    font-size: 0.9rem !important;
+  }
+
+  /* Container padding */
+  .container,
+  .container--fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Buttons - slightly smaller */
+  .button,
+  .button--primary,
+  .button--secondary,
+  .buttonPrimary,
+  .buttonSecondary {
+    font-size: 0.95rem !important;
+    padding: 0.7rem 1.5rem !important;
+  }
+}
+
+/* ============================================================================
+   MOBILE TYPOGRAPHY - Below 500px (Small screens)
+   ============================================================================ */
+@media (max-width: 500px) {
+
+  /* Base font size adjustment */
+  html {
+    font-size: 15px;
+  }
+
+  /* Headings - Scale down for mobile */
+  h1,
+  .markdown h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  h2,
+  .markdown h2 {
+    font-size: 1.4rem !important;
+    line-height: 1.25 !important;
+    margin-top: 2rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  h3,
+  .markdown h3 {
+    font-size: 1.2rem !important;
+    line-height: 1.3 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  h4,
+  .markdown h4 {
+    font-size: 1.1rem !important;
+    line-height: 1.35 !important;
+  }
+
+  h5,
+  h6,
+  .markdown h5,
+  .markdown h6 {
+    font-size: 1rem !important;
+  }
+
+  /* Paragraphs and body text */
+  p,
+  .markdown p,
+  li,
+  .markdown li {
+    font-size: 0.95rem !important;
+    line-height: 1.65 !important;
+  }
+
+  /* Doc page title */
+  .theme-doc-markdown h1:first-child {
+    font-size: 1.6rem !important;
+  }
+
+  /* Code blocks */
+  pre,
+  code {
+    font-size: 0.85rem !important;
+  }
+
+  pre {
+    padding: 0.75rem !important;
+    border-radius: 6px !important;
+    overflow-x: auto !important;
+  }
+
+  /* Inline code */
+  code {
+    padding: 0.15em 0.35em !important;
+  }
+
+  /* Tables */
+  table {
+    font-size: 0.85rem !important;
+  }
+
+  th,
+  td {
+    padding: 0.5rem !important;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    padding: 0.75rem 1rem !important;
+    margin: 1rem 0 !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Admonitions (note, tip, warning, etc.) */
+  .admonition,
+  .alert,
+  [class*="admonition"] {
+    padding: 0.75rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .admonition-heading,
+  [class*="admonitionHeading"] {
+    font-size: 0.95rem !important;
+  }
+
+  /* Sidebar content font sizes */
+  .menu__link {
+    font-size: 0.9rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  /* Table of contents on mobile */
+  .table-of-contents {
+    font-size: 0.85rem !important;
+  }
+
+  /* Doc container padding */
+  .container,
+  .container--fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Markdown content padding */
+  .theme-doc-markdown {
+    padding: 0 !important;
+  }
+
+  /* Lists */
+  ul,
+  ol {
+    padding-left: 1.25rem !important;
+  }
+
+  /* Images */
+  .markdown img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Buttons - smaller for mobile */
+  .button,
+  .button--primary,
+  .button--secondary,
+  .buttonPrimary,
+  .buttonSecondary {
+    font-size: 0.9rem !important;
+    padding: 0.6rem 1.25rem !important;
+  }
 }

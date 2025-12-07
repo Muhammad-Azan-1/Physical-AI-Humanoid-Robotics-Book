@@ -48,6 +48,8 @@
   border-radius: 16px;
   padding: 2.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none !important;
+  display: block;
 
   background: var(--card-bg);
   border: 1px solid var(--card-border);
