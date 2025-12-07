@@ -77,8 +77,7 @@ const config: Config = {
           // sidebar: 'mainSidebar',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/humanoid-robotics-book/physical-ai-book/tree/main/',
+
         },
         blog: {
           showReadingTime: true,
@@ -88,8 +87,7 @@ const config: Config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/humanoid-robotics-book/physical-ai-book/tree/main/',
+
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -112,7 +110,7 @@ const config: Config = {
       title: 'Physical AI & Humanoid Robotics',
       logo: {
         alt: 'Physical AI & Humanoid Robotics Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.png',
       },
       hideOnScroll: false,
       items: [
@@ -149,7 +147,7 @@ const config: Config = {
             },
             {
               label: 'Full Curriculum',
-              to: '/docs/module1/module1-week1-chapter1',
+              to: '/docs/module1/week1-2',
             },
             {
               label: 'Learning Path',
@@ -161,20 +159,8 @@ const config: Config = {
           title: 'COMMUNITY',
           items: [
             {
-              label: 'YouTube',
-              href: 'https://www.youtube.com/@panaversity',
-            },
-            {
-              label: 'LinkedIn',
-              href: 'https://www.linkedin.com/company/panaversity',
-            },
-            {
-              label: 'Instagram',
-              href: 'https://www.instagram.com/panaversity',
-            },
-            {
-              label: 'Facebook',
-              href: 'https://www.facebook.com/panaversity',
+              label: 'GitHub',
+              href: 'https://github.com/',
             },
           ],
         },
@@ -183,15 +169,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Repository',
-              href: 'https://github.com/panaversity',
+              href: 'https://github.com/',
             },
             {
               label: 'Physical AI Specification',
-              to: '/requirements',
-            },
-            {
-              label: 'Example Projects',
-              to: '/projects',
+              to: '/docs/intro',
             },
           ],
         },
@@ -199,17 +181,13 @@ const config: Config = {
           title: 'ABOUT',
           items: [
             {
-              label: 'Panaversity',
-              href: 'https://www.panaversity.org',
-            },
-            {
-              label: 'Our Mission',
-              href: 'https://www.panaversity.org/about',
+              label: 'About This Course',
+              to: '/docs/intro',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Panaversity • Physical AI & Humanoid Robotics • Free & Open Source`,
+      copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics • Free & Open Source`,
     },
     prism: {
       theme: prismThemes.github,

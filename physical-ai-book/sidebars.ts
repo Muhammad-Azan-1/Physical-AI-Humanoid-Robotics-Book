@@ -20,25 +20,30 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Module 1: Foundations',
       link: { type: 'generated-index', slug: '/modules/foundations' },
-      items: ['module1/module1-week1-chapter1'],
+      items: [
+        'module1/index',
+        'module1/week1-2',
+        'module1/week3-5',
+      ],
     },
     {
       type: 'category',
       label: 'Module 2: ROS 2 for Humanoids',
       link: { type: 'generated-index', slug: '/modules/ros2' },
-      items: ['module2/module2-week1-chapter1'],
+      items: ['module2/index', 'module2/week6-7'],
     },
     {
       type: 'category',
-      label: 'Module 3: Simulation & Reinforcement Learning',
-      link: { type: 'generated-index', slug: '/modules/simulation' },
-      items: ['module3/module3-week1-chapter1'],
+      label: 'Module 3: The AI-Robot Brain',
+      link: { type: 'generated-index', slug: '/modules/isaac' },
+      items: ['module3/index', 'module3/week8-10'],
     },
+
     {
       type: 'category',
-      label: 'Module 4: Real-World Deployment & Ethical AI',
-      link: { type: 'generated-index', slug: '/modules/isaac-ai' },
-      items: ['module4/module4-week1-chapter1'],
+      label: 'Module 4: Vision-Language-Action (VLA)',
+      link: { type: 'generated-index', slug: '/modules/vla' },
+      items: ['module4/index', 'module4/week11-13'],
     },
   ],
 

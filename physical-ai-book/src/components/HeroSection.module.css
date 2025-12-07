@@ -218,3 +218,28 @@
   background: var(--color-zinc-800);
   border-color: var(--color-zinc-600);
 }
+
+/* Mobile responsive buttons - 500px to 640px */
+@media (max-width: 640px) and (min-width: 501px) {
+
+  .buttonPrimary,
+  .buttonSecondary {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Mobile responsive buttons - Below 500px */
+@media (max-width: 500px) {
+  .heroButtons {
+    gap: 0.75rem;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
+  }
+}

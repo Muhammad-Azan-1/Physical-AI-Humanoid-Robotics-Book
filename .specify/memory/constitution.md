@@ -1,7 +1,19 @@
+<!--
+SYNC IMPACT REPORT
+
+- Version change: v1.1.1 -> v1.2.0
+- Modified principles:
+  - Added Principle 10: Sequential and Unique Feature Identification.
+- Templates requiring updates:
+  - .specify/scripts/bash/create-new-feature.sh (pending)
+- Follow-up TODOs:
+  - The script at .specify/scripts/bash/create-new-feature.sh needs to be updated to implement the new Principle 10. Specifically, the logic for determining the next feature number should be changed to scan all directories in `specs/` to find the highest number, regardless of the feature name.
+-->
 # Physical AI & Humanoid Robotics Book — Constitution
 
-**Version:** v1.1.1
+**Version:** v1.2.0
 **Ratified:** 2025-01-20
+**Last Amended:** 2025-12-05
 **Scope:** Educational content for Physical AI & Humanoid Robotics course
 **Audience:** AI Agents (Super-Orchestra, module-planner, content-implementer, validation-auditor)
 **Platform:** Docusaurus + GitHub Pages via Spec-Kit Plus & Claude Code
@@ -94,6 +106,53 @@ Think like systems engineer analyzing dependencies across bipedal dynamics, natu
 **Hardware Testing Decision:** If 3+ risks → Mandatory validation; 1-2 risks → Staged testing; 0 risks → Sim sufficient
 
 ---
+## IIb. Research & Documentation Protocol
+
+### MANDATORY: MCP-First Research Strategy
+
+**Before using bash/CLI tools for research, MUST use MCP servers:**
+
+1. **Documentation Research** → Context 7 MCP Server
+   - Docusaurus API queries
+   - ROS 2 documentation lookups
+   - Isaac Sim reference searches
+   - Platform version verification
+
+2. **Repository Research** → GitHub MCP Server
+   - Example implementations (docusaurus homepages, ROS 2 packages)
+   - Latest releases and changelogs
+   - Community patterns and best practices
+   - Open source humanoid robot projects
+
+3. **Fallback Only** → Bash/CLI commands
+   - ONLY when MCP doesn't provide the capability
+   - Must document why MCP insufficient
+   - Explain bash approach chosen
+
+**Validation Questions:**
+- Have you checked `/mcp` for available tools?
+- Is this operation available via Context 7 or GitHub MCP?
+- Have you attempted MCP query before falling back to bash?
+
+**Example MCP Queries:**
+```
+# Documentation
+"Use Context 7 to search: Docusaurus v3 sidebar nested categories"
+
+# Repository examples
+"Use GitHub MCP to find: topic:docusaurus stars:>100 homepage examples"
+
+# Latest versions
+"Use GitHub MCP to get latest release: facebook/docusaurus"
+```
+
+**Prohibited Without MCP Attempt:**
+- ❌ `curl https://api.github.com/...`
+- ❌ `gh repo search ...`
+- ❌ Manual web scraping for docs
+- ❌ `git clone` for reference without MCP search first
+
+---
 
 ## IIa. 4-Layer Teaching Framework
 **NOT "deploy voice-controlled humanoid day one"—progressive mastery:**
@@ -156,6 +215,11 @@ Think like systems engineer analyzing dependencies across bipedal dynamics, natu
 **Question:** Why human form factor matters?
 **Advantages:** Infrastructure compatibility (stairs, doors), training data abundance, social acceptability
 **Check:** Humanoid form factor justified?
+
+### Principle 10: Sequential and Unique Feature Identification
+**Question:** How are new features identified and organized?
+**Rule:** All features MUST be assigned a unique, sequential, zero-padded 3-digit identifier (e.g., `001`, `002`). This identifier MUST be used as the directory name for all feature-specific artifacts under `specs/`. The next available identifier MUST be determined by scanning all existing directories in `specs/`, regardless of their name.
+**Check:** Is the new feature directory using the next available sequential identifier?
 
 ---
 
@@ -244,16 +308,11 @@ Each agent: **Receives** context → **Reasons** about value → **Produces** ou
 ## XIII. Constitutional Oath
 **I commit to:**
 1. **Never modifying Docusaurus without Context 7 MCP verification.**
-2. Humanoid-first design (form factor matters)
-3. Simulation-first safety (validate before hardware)
-4. VLA integration throughout (voice is primary)
-5. Hardware tier equity (Tier 1 full outcomes)
-6. Timeline anchoring (13 weeks, 4 assessments)
-7. Real-time consciousness (latency requirements)
-8. Sim-to-real transparency (acknowledge gaps)
-9. Reasoning over rules (decision frameworks)
-10. Safety above all (zero incidents)
-
+2. **Always attempting MCP servers before bash commands for research.**
+3. **Using Context 7 MCP for all documentation queries.**
+4. **Using GitHub MCP for all repository/release research.**
+5. Humanoid-first design (form factor matters)
+6. Simulation-first safety (validate before hardware)
 ---
 
 **END CONSTITUTION v1.1.1**
