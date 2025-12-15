@@ -178,8 +178,25 @@ body {
    ============================================================================ */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--ifm-navbar-height);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Heading Anchors - Proper Scroll Offset */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  scroll-margin-top: calc(var(--ifm-navbar-height) + 1rem);
 }
 
 /* Enhanced Card Styling */
@@ -685,6 +702,23 @@ main,
 /* Table of contents links */
 .table-of-contents__link:hover {
   color: var(--ifm-color-primary);
+}
+
+.table-of-contents__link--active {
+  color: #06b6d4 !important;
+  /* Cyan-500 equivalent */
+  font-weight: 700 !important;
+  border-left: 3px solid #06b6d4 !important;
+  padding-left: 8px !important;
+  background-color: rgba(6, 182, 212, 0.05);
+  /* Slight background highlighting */
+}
+
+/* Ensure sub-items also get highlighted if active */
+.table-of-contents__link--active code {
+  color: #06b6d4 !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 /* ============================================================================
