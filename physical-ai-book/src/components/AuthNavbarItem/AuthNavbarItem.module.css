@@ -1,0 +1,43 @@
+.authContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.authContainer.mobile {
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+}
+
+.authContainer.mobile .signOutButton,
+.authContainer.mobile a {
+    width: 100%;
+    justify-content: center;
+}
+
+.userEmail {
+    font-size: 0.875rem;
+    color: var(--ifm-navbar-link-color);
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    background: var(--ifm-color-emphasis-100);
+    border-radius: 4px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.signOutButton {
+    background: transparent;
+    border: 1px solid var(--ifm-color-emphasis-400);
+    color: var(--ifm-navbar-link-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.signOutButton:hover {
+    background: var(--ifm-color-emphasis-200);
+    border-color: var(--ifm-color-emphasis-500);
+}

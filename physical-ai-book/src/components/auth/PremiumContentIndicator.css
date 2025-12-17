@@ -1,0 +1,58 @@
+.premium-content-container {
+  position: relative;
+  margin: 1rem 0;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.premium-content-locked {
+  opacity: 0.7;
+}
+
+.premium-content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.premium-content-message {
+  text-align: center;
+  padding: 2rem;
+  max-width: 500px;
+}
+
+.premium-content-message h3 {
+  color: #e74c3c;
+  margin-top: 0;
+}
+
+.premium-content-message p {
+  margin: 1rem 0;
+  color: #666;
+}
+
+.premium-content-signin-button {
+  margin-top: 1rem;
+  display: inline-block;
+}
+
+.premium-content {
+  padding: 1rem;
+}
+
+.premium-content-authenticated {
+  opacity: 1;
+}
+
+/* For authenticated users, remove the dashed border */
+.premium-content-accessible.premium-content-authenticated {
+  border: 2px solid #27ae60;
+}

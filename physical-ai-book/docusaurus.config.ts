@@ -1,4 +1,4 @@
-
+import 'dotenv/config';
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
@@ -26,6 +26,17 @@ const config: Config = {
   projectName: 'Physical-AI-Humanoid-Robotics-Book', // Your repo name
   trailingSlash: false,
   deploymentBranch: 'gh-pages',
+
+  // Custom fields for environment variables (accessible via useDocusaurusContext)
+  customFields: {
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  },
+
+  // Custom plugins
+  plugins: [
+    './plugins/webpack-plugin.js',
+  ],
 
   onBrokenLinks: 'throw',
 
@@ -134,6 +145,10 @@ const config: Config = {
           label: 'Sign Up',
           position: 'right',
           className: 'button button--primary button--sm',
+        },
+        {
+          type: 'custom-profile',
+          position: 'right',
         },
       ],
     },
