@@ -5,7 +5,7 @@ interface SectionSummaryProps {
     children: React.ReactNode;
 }
 
-export default function SectionSummary({ children }: SectionSummaryProps): JSX.Element {
+export default function SectionSummary({ children }: SectionSummaryProps): React.ReactElement {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
