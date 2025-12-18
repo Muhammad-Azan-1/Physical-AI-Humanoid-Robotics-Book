@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-backend = "backend.__init__:main"
+backend = "backend:main"
 
 [build-system]
 requires = ["hatchling"]
