@@ -4,8 +4,24 @@ import SignupForm from '../components/auth/SignupForm';
 import Link from '@docusaurus/Link';
 import { getValidRedirectUrl } from '../utils/authHelpers';
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import { useAuth } from '../contexts/AuthContext';
+
 const SignupPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [isSignedUp, setIsSignedUp] = useState(false);
+  const signinUrl = useBaseUrl('/signin');
+  const homeUrl = useBaseUrl('/');
+
+  // Redirect if already authenticated (or becomes authenticated via another tab)
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('returnUrl');
+      const redirectUrl = returnUrl ? decodeURIComponent(returnUrl) : homeUrl;
+      window.location.href = redirectUrl;
+    }
+  }, [isAuthenticated, homeUrl]);
 
   // Get return URL from query parameters
   const getReturnUrl = (): string | null => {
@@ -24,8 +40,14 @@ const SignupPage: React.FC = () => {
   // Handle redirect after email verification
   const handleVerificationRedirect = () => {
     const returnUrl = getReturnUrl();
-    const redirectUrl = getValidRedirectUrl(returnUrl, '/');
-    window.location.href = redirectUrl;
+
+    // Store the original destination if it exists, so the Sign In page can use it later
+    if (returnUrl) {
+      localStorage.setItem('original_destination', returnUrl);
+    }
+
+    // Always redirect to the Sign In page when clicking the button
+    window.location.href = signinUrl;
   };
 
   return (

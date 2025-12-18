@@ -1,0 +1,194 @@
+# Authentication API Contracts
+
+## User Registration
+- **Endpoint**: `POST /auth/register`
+- **Request**:
+  - Headers: `Content-Type: application/json`
+  - Body:
+    ```json
+    {
+      "email": "user@example.com",
+      "password": "securePassword123",
+      "first_name": "John",
+      "last_name": "Doe"
+    }
+    ```
+- **Response (Success)**:
+  - Status: `201 Created`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "message": "User registered successfully. Please check your email for verification.",
+      "user_id": "uuid-string"
+    }
+    ```
+- **Response (Error)**:
+  - Status: `400 Bad Request`
+  - Body:
+    ```json
+    {
+      "success": false,
+      "error": "Invalid email format or password too weak"
+    }
+    ```
+
+## User Login
+- **Endpoint**: `POST /auth/login`
+- **Request**:
+  - Headers: `Content-Type: application/json`
+  - Body:
+    ```json
+    {
+      "email": "user@example.com",
+      "password": "securePassword123"
+    }
+    ```
+- **Response (Success)**:
+  - Status: `200 OK`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "user": {
+        "id": "uuid-string",
+        "email": "user@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "role": "student"
+      },
+      "session": {
+        "access_token": "jwt-token-string",
+        "refresh_token": "refresh-token-string",
+        "expires_at": "2023-12-31T23:59:59Z"
+      }
+    }
+    ```
+- **Response (Error)**:
+  - Status: `401 Unauthorized`
+  - Body:
+    ```json
+    {
+      "success": false,
+      "error": "Invalid credentials"
+    }
+    ```
+
+## User Logout
+- **Endpoint**: `POST /auth/logout`
+- **Request**:
+  - Headers:
+    - `Content-Type: application/json`
+    - `Authorization: Bearer {access_token}`
+  - Body: `{}`
+- **Response (Success)**:
+  - Status: `200 OK`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "message": "Successfully logged out"
+    }
+    ```
+
+## Get User Profile
+- **Endpoint**: `GET /auth/profile`
+- **Request**:
+  - Headers: `Authorization: Bearer {access_token}`
+- **Response (Success)**:
+  - Status: `200 OK`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "user": {
+        "id": "uuid-string",
+        "email": "user@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "display_name": "John Doe",
+        "avatar_url": "https://example.com/avatar.jpg",
+        "role": "student",
+        "created_at": "2023-01-01T00:00:00Z",
+        "last_login_at": "2023-12-01T10:30:00Z"
+      }
+    }
+    ```
+
+## Update User Profile
+- **Endpoint**: `PUT /auth/profile`
+- **Request**:
+  - Headers:
+    - `Content-Type: application/json`
+    - `Authorization: Bearer {access_token}`
+  - Body:
+    ```json
+    {
+      "first_name": "John",
+      "last_name": "Doe",
+      "display_name": "John Doe",
+      "bio": "A passionate learner"
+    }
+    ```
+- **Response (Success)**:
+  - Status: `200 OK`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "user": {
+        "id": "uuid-string",
+        "email": "user@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "display_name": "John Doe",
+        "avatar_url": "https://example.com/avatar.jpg",
+        "bio": "A passionate learner"
+      }
+    }
+    ```
+
+## Request Password Reset
+- **Endpoint**: `POST /auth/password-reset`
+- **Request**:
+  - Headers: `Content-Type: application/json`
+  - Body:
+    ```json
+    {
+      "email": "user@example.com"
+    }
+    ```
+- **Response (Success)**:
+  - Status: `200 OK`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "message": "Password reset email sent successfully"
+    }
+    ```
+
+## Verify Protected Content Access
+- **Endpoint**: `GET /auth/verify-access/{contentId}`
+- **Request**:
+  - Headers: `Authorization: Bearer {access_token}`
+- **Response (Success)**:
+  - Status: `200 OK`
+  - Body:
+    ```json
+    {
+      "success": true,
+      "has_access": true,
+      "content_id": "content-uuid",
+      "access_level": "view"
+    }
+    ```
+- **Response (Unauthorized)**:
+  - Status: `403 Forbidden`
+  - Body:
+    ```json
+    {
+      "success": false,
+      "error": "User does not have access to this content"
+    }
+    ```

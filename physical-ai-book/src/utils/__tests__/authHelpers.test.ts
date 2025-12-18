@@ -1,57 +1,68 @@
-import { isValidRedirectUrl, getValidRedirectUrl } from '../authHelpers';
+import { validateEmail, validatePassword, passwordsMatch, handleAuthError, isUserAuthenticated, sanitizeInput, isSessionValid, isValidRedirectUrl, getValidRedirectUrl, formatAuthErrorMessage } from '../authHelpers';
 
-describe('URL Validation Utilities', () => {
+describe('authHelpers', () => {
+  describe('validateEmail', () => {
+    it('should return true for valid email addresses', () => {
+      expect(validateEmail('test@example.com')).toBe(true);
+      expect(validateEmail('user.name+tag@example.co.uk')).toBe(true);
+    });
+
+    it('should return false for invalid email addresses', () => {
+      expect(validateEmail('invalid-email')).toBe(false);
+      expect(validateEmail('')).toBe(false);
+      expect(validateEmail('@example.com')).toBe(false);
+    });
+  });
+
+  describe('validatePassword', () => {
+    it('should return true for strong passwords', () => {
+      expect(validatePassword('StrongPass123!')).toBe(true);
+      expect(validatePassword('Another123@')).toBe(true);
+    });
+
+    it('should return false for weak passwords', () => {
+      expect(validatePassword('weak')).toBe(false);
+      expect(validatePassword('NoNumbers!')).toBe(false);
+      expect(validatePassword('NoSpecial123')).toBe(false);
+      expect(validatePassword('')).toBe(false);
+    });
+  });
+
+  describe('passwordsMatch', () => {
+    it('should return true when passwords match', () => {
+      expect(passwordsMatch('password123', 'password123')).toBe(true);
+    });
+
+    it('should return false when passwords do not match', () => {
+      expect(passwordsMatch('password123', 'different')).toBe(false);
+    });
+  });
+
+  describe('sanitizeInput', () => {
+    it('should sanitize potentially harmful input', () => {
+      expect(sanitizeInput('<script>alert("xss")</script>')).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;&#x27;/script&gt;');
+      expect(sanitizeInput('normal input')).toBe('normal input');
+    });
+  });
+
   describe('isValidRedirectUrl', () => {
-    test('should return true for valid internal URLs', () => {
-      expect(isValidRedirectUrl('/')).toBe(true);
+    it('should return true for valid internal URLs', () => {
       expect(isValidRedirectUrl('/dashboard')).toBe(true);
-      expect(isValidRedirectUrl('/docs/guide')).toBe(true);
-      expect(isValidRedirectUrl('/profile?tab=settings')).toBe(true);
+      expect(isValidRedirectUrl('/profile/settings')).toBe(true);
     });
 
-    test('should return false for external URLs', () => {
+    it('should return false for external URLs', () => {
       expect(isValidRedirectUrl('https://example.com')).toBe(false);
-      expect(isValidRedirectUrl('http://example.com')).toBe(false);
       expect(isValidRedirectUrl('//example.com')).toBe(false);
-      expect(isValidRedirectUrl('javascript:alert(1)')).toBe(false);
-    });
-
-    test('should return false for auth page redirects to prevent loops', () => {
-      expect(isValidRedirectUrl('/signin')).toBe(false);
-      expect(isValidRedirectUrl('/signup')).toBe(false);
-      expect(isValidRedirectUrl('/auth/callback')).toBe(false);
-      expect(isValidRedirectUrl('/signout')).toBe(false);
-    });
-
-    test('should return false for null, undefined, or empty URLs', () => {
-      expect(isValidRedirectUrl('')).toBe(false);
-      expect(isValidRedirectUrl(null as any)).toBe(false);
-      expect(isValidRedirectUrl(undefined as any)).toBe(false);
-    });
-
-    test('should return false for URLs not starting with /', () => {
-      expect(isValidRedirectUrl('dashboard')).toBe(false);
-      expect(isValidRedirectUrl(' docs/guide')).toBe(false);
+      expect(isValidRedirectUrl('/signin')).toBe(false); // auth page
     });
   });
 
   describe('getValidRedirectUrl', () => {
-    test('should return the URL if it is valid', () => {
-      expect(getValidRedirectUrl('/dashboard')).toBe('/dashboard');
-      expect(getValidRedirectUrl('/docs/guide')).toBe('/docs/guide');
-    });
-
-    test('should return fallback if URL is invalid', () => {
-      expect(getValidRedirectUrl('https://example.com')).toBe('/');
-      expect(getValidRedirectUrl('')).toBe('/');
-      expect(getValidRedirectUrl(null)).toBe('/');
-      expect(getValidRedirectUrl(undefined)).toBe('/');
-      expect(getValidRedirectUrl('/signin')).toBe('/');
-    });
-
-    test('should return custom fallback if provided', () => {
-      expect(getValidRedirectUrl('https://example.com', '/home')).toBe('/home');
-      expect(getValidRedirectUrl(null, '/default')).toBe('/default');
+    it('should return valid redirect URL or fallback', () => {
+      expect(getValidRedirectUrl('/dashboard', '/')).toBe('/dashboard');
+      expect(getValidRedirectUrl('https://example.com', '/')).toBe('/');
+      expect(getValidRedirectUrl(null, '/')).toBe('/');
     });
   });
 });

@@ -61,10 +61,30 @@ const AuthCallbackPage: React.FC = () => {
                         setStatus('success');
                         setMessage('Email verified successfully! You are now logged in.');
 
+                        // Notify other tabs of the authentication update via localStorage event
+                        const authState = {
+                            event: 'SIGNED_IN',
+                            session: data.session,
+                            timestamp: Date.now(),
+                        };
+                        localStorage.setItem('auth-state', JSON.stringify(authState));
+
                         // Check for return URL in query parameters before redirecting
                         const urlParams = new URLSearchParams(window.location.search);
                         const returnUrl = urlParams.get('returnUrl');
-                        const redirectUrl = returnUrl ? getValidRedirectUrl(decodeURIComponent(returnUrl), siteConfig.baseUrl) : siteConfig.baseUrl;
+
+                        // Get original destination from localStorage (if stored during signup)
+                        const originalDestination = localStorage.getItem('original_destination');
+
+                        // Use the original destination if available, otherwise use returnUrl, otherwise default to home
+                        let redirectUrl = siteConfig.baseUrl; // default
+                        if (originalDestination) {
+                            redirectUrl = getValidRedirectUrl(originalDestination, siteConfig.baseUrl);
+                            // Clear the stored destination after using it
+                            localStorage.removeItem('original_destination');
+                        } else if (returnUrl) {
+                            redirectUrl = getValidRedirectUrl(decodeURIComponent(returnUrl), siteConfig.baseUrl);
+                        }
 
                         // Redirect after a short delay
                         setTimeout(() => {
@@ -85,10 +105,30 @@ const AuthCallbackPage: React.FC = () => {
                         setStatus('success');
                         setMessage('Email verified successfully! You are now logged in.');
 
+                        // Notify other tabs of the authentication update via localStorage event
+                        const authState = {
+                            event: 'SIGNED_IN',
+                            session: session,
+                            timestamp: Date.now(),
+                        };
+                        localStorage.setItem('auth-state', JSON.stringify(authState));
+
                         // Check for return URL in query parameters before redirecting
                         const urlParams = new URLSearchParams(window.location.search);
                         const returnUrl = urlParams.get('returnUrl');
-                        const redirectUrl = returnUrl ? getValidRedirectUrl(decodeURIComponent(returnUrl), siteConfig.baseUrl) : siteConfig.baseUrl;
+
+                        // Get original destination from localStorage (if stored during signup)
+                        const originalDestination = localStorage.getItem('original_destination');
+
+                        // Use the original destination if available, otherwise use returnUrl, otherwise default to home
+                        let redirectUrl = siteConfig.baseUrl; // default
+                        if (originalDestination) {
+                            redirectUrl = getValidRedirectUrl(originalDestination, siteConfig.baseUrl);
+                            // Clear the stored destination after using it
+                            localStorage.removeItem('original_destination');
+                        } else if (returnUrl) {
+                            redirectUrl = getValidRedirectUrl(decodeURIComponent(returnUrl), siteConfig.baseUrl);
+                        }
 
                         setTimeout(() => {
                             window.location.href = redirectUrl;
