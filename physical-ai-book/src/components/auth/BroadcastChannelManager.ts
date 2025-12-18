@@ -31,30 +31,43 @@ class BroadcastChannelManager {
   private readonly tabId: string;
   private messageHandlers: Map<CrossTabMessageType, Array<(data: any) => void>> = new Map();
   private fallbackTimer: number | null = null;
+  private isBrowser: boolean;
 
   constructor(channelName: string = 'auth-sync-channel') {
+    // Check if we're in a browser environment
+    this.isBrowser = typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined';
     this.channelName = channelName;
-    // Generate a unique ID for this tab instance
-    this.tabId = `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Initialize BroadcastChannel if supported
-    if (typeof BroadcastChannel !== 'undefined') {
-      this.channel = new BroadcastChannel(this.channelName);
-      this.channel.onmessage = this.handleMessage.bind(this);
-    } else {
-      console.warn('BroadcastChannel not supported, falling back to localStorage events');
-      // Set up fallback using localStorage events
-      window.addEventListener('storage', this.handleStorageEvent.bind(this));
+    // Generate a unique ID for this tab instance (only in browser)
+    this.tabId = this.isBrowser
+      ? `tab_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      : 'server_instance';
+
+    if (this.isBrowser) {
+      // Initialize BroadcastChannel if supported
+      if (typeof BroadcastChannel !== 'undefined') {
+        this.channel = new BroadcastChannel(this.channelName);
+        this.channel.onmessage = this.handleMessage.bind(this);
+      } else {
+        console.warn('BroadcastChannel not supported, falling back to localStorage events');
+        // Set up fallback using localStorage events
+        window.addEventListener('storage', this.handleStorageEvent.bind(this));
+      }
+
+      // Set up cleanup
+      window.addEventListener('beforeunload', this.cleanup.bind(this));
     }
-
-    // Set up cleanup
-    window.addEventListener('beforeunload', this.cleanup.bind(this));
   }
 
   /**
    * Subscribe to specific message types
    */
   subscribe(type: CrossTabMessageType, handler: (data: any) => void): void {
+    if (!this.isBrowser) {
+      // Skip subscription on server side
+      return;
+    }
+
     if (!this.messageHandlers.has(type)) {
       this.messageHandlers.set(type, []);
     }
@@ -66,6 +79,11 @@ class BroadcastChannelManager {
    * Unsubscribe from specific message types
    */
   unsubscribe(type: CrossTabMessageType, handler: (data: any) => void): void {
+    if (!this.isBrowser) {
+      // Skip unsubscription on server side
+      return;
+    }
+
     const handlers = this.messageHandlers.get(type);
     if (handlers) {
       const index = handlers.indexOf(handler);
@@ -79,6 +97,11 @@ class BroadcastChannelManager {
    * Send a message to other tabs
    */
   sendMessage(type: CrossTabMessageType, data?: any): void {
+    if (!this.isBrowser) {
+      // Skip sending messages on server side
+      return;
+    }
+
     const message: CrossTabMessage = {
       type,
       data,
@@ -105,6 +128,11 @@ class BroadcastChannelManager {
    * Send message via localStorage as fallback
    */
   private sendViaLocalStorage(message: CrossTabMessage): void {
+    if (!this.isBrowser) {
+      // Skip localStorage operations on server side
+      return;
+    }
+
     // Use localStorage to communicate with other tabs
     const key = `auth-sync-message-${Date.now()}`;
     localStorage.setItem(key, JSON.stringify(message));
@@ -140,6 +168,11 @@ class BroadcastChannelManager {
    * Handle incoming messages from localStorage events (fallback)
    */
   private handleStorageEvent(event: StorageEvent): void {
+    if (!this.isBrowser) {
+      // Skip storage event handling on server side
+      return;
+    }
+
     if (event.key && event.key.startsWith('auth-sync-message-') && event.newValue) {
       try {
         const message: CrossTabMessage = JSON.parse(event.newValue);
@@ -205,6 +238,11 @@ class BroadcastChannelManager {
    * Cleanup resources
    */
   private cleanup(): void {
+    if (!this.isBrowser) {
+      // Skip cleanup on server side
+      return;
+    }
+
     if (this.channel) {
       this.channel.close();
     }
@@ -254,9 +292,13 @@ class BroadcastChannelManager {
 let broadcastChannelManager: BroadcastChannelManager | null = null;
 
 export const getBroadcastChannelManager = (): BroadcastChannelManager => {
+  // Check if we're in a browser environment before creating the instance
+  const isBrowser = typeof window !== 'undefined';
+
   if (!broadcastChannelManager) {
     broadcastChannelManager = new BroadcastChannelManager();
   }
+
   return broadcastChannelManager;
 };
 
