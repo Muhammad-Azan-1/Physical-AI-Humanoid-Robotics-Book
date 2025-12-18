@@ -26,10 +26,4 @@ jobs:
       - name: Build Docusaurus site
         run: npm run build --prefix physical-ai-book
 
-      - name: Validate Docusaurus build
-        run: |
-          echo "Running Docusaurus build validation..."
-          npx docusaurus build --config physical-ai-book/docusaurus.config.ts
-          echo "Docusaurus build validation complete."
-
       # Add deployment steps here if applicable
