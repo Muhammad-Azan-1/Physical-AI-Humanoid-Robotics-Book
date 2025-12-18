@@ -1,9 +1,10 @@
 <!--
 SYNC IMPACT REPORT
 
-- Version change: v1.1.1 -> v1.2.0
+- Version change: v1.1.1 -> v1.2.1
 - Modified principles:
   - Added Principle 10: Sequential and Unique Feature Identification.
+  - Added Principle 11: Authentication State Management.
 - Templates requiring updates:
   - .specify/scripts/bash/create-new-feature.sh (pending)
 - Follow-up TODOs:
@@ -11,9 +12,9 @@ SYNC IMPACT REPORT
 -->
 # Physical AI & Humanoid Robotics Book — Constitution
 
-**Version:** v1.2.0
+**Version:** v1.2.1
 **Ratified:** 2025-01-20
-**Last Amended:** 2025-12-05
+**Last Amended:** 2025-12-18
 **Scope:** Educational content for Physical AI & Humanoid Robotics course
 **Audience:** AI Agents (Super-Orchestra, module-planner, content-implementer, validation-auditor)
 **Platform:** Docusaurus + GitHub Pages via Spec-Kit Plus & Claude Code
@@ -221,7 +222,13 @@ Think like systems engineer analyzing dependencies across bipedal dynamics, natu
 **Rule:** All features MUST be assigned a unique, sequential, zero-padded 3-digit identifier (e.g., `001`, `002`). This identifier MUST be used as the directory name for all feature-specific artifacts under `specs/`. The next available identifier MUST be determined by scanning all existing directories in `specs/`, regardless of their name.
 **Check:** Is the new feature directory using the next available sequential identifier?
 
+### Principle 11: Authentication State Management
+**Question:** How should authentication be handled across the application?
+**Rule:** Authentication state MUST be synchronized across all browser contexts (tabs, windows) using appropriate mechanisms (BroadcastChannel, localStorage events, or similar). User authentication status MUST persist consistently across page refreshes and navigation. Email verification flows MUST automatically authenticate users without requiring additional login steps. Cross-tab authentication events MUST be handled to ensure consistent user experience.
+**Check:** Does the implementation maintain consistent authentication state across all browser contexts?
+
 ---
+
 
 ## IV. Agent Coordination (Reasoning Handoffs)
 **Super-Orchestra → Module-Planner → Content-Implementer → Technical-Reviewer**
@@ -284,6 +291,7 @@ Each agent: **Receives** context → **Reasons** about value → **Produces** ou
 6. Sim-to-real transparency? (Limitations documented)
 7. Student-facing language? (No scaffolding exposure)
 8. Real-time performance? (Latency requirements)
+9. Authentication considerations? (Cross-tab sync, auto-login after verification, session persistence)
 
 ---
 

@@ -4,6 +4,7 @@ import { initializeSupabase, getSupabase } from '../services/supabase'
 import { AuthContextType, AuthState, User, UserProfile, SignUpOptions } from '../types/auth'
 import { handleAuthError, isSessionValid } from '../utils/auth-utils'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
+import { getBroadcastChannelManager, AuthStateData } from '../components/auth/BroadcastChannelManager'
 
 interface AuthProviderProps {
   children: ReactNode
@@ -112,12 +113,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const customUser = supabaseUserToCustomUser(session.user);
         setUser(customUser);
         setIsAuthenticated(true);
+
+        // Notify other tabs of the auth update via BroadcastChannel
+        const bc = getBroadcastChannelManager();
+        bc.notifyAuthUpdate({
+          isAuthenticated: true,
+          user: customUser,
+          session,
+          emailVerified: customUser?.email_verified
+        });
       } else {
         setUser(null);
         setIsAuthenticated(false);
+
+        // Notify other tabs of the auth update via BroadcastChannel
+        const bc = getBroadcastChannelManager();
+        bc.notifyAuthUpdate({
+          isAuthenticated: false
+        });
       }
 
-      // Store auth state in localStorage for cross-window synchronization
+      // Store auth state in localStorage for cross-window synchronization (fallback)
       const authState = {
         event,
         session,
@@ -131,8 +147,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, [supabase]);
 
-  // Cross-window auth state synchronization
+  // Cross-window auth state synchronization using both BroadcastChannel and localStorage
   useEffect(() => {
+    const bc = getBroadcastChannelManager();
+
+    // Handle messages from BroadcastChannel
+    const handleBroadcastMessage = (data: AuthStateData) => {
+      if (data.session) {
+        setSession(data.session);
+        const customUser = supabaseUserToCustomUser(data.session.user);
+        setUser(customUser);
+        setIsAuthenticated(data.isAuthenticated);
+      } else {
+        setUser(null);
+        setSession(null);
+        setIsAuthenticated(data.isAuthenticated);
+      }
+    };
+
+    // Subscribe to AUTH_UPDATE messages
+    bc.subscribe('AUTH_UPDATE', handleBroadcastMessage);
+
+    // Handle messages from localStorage (fallback)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'auth-state' && e.newValue) {
         try {
@@ -142,10 +178,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const customUser = supabaseUserToCustomUser(authState.session.user);
             setUser(customUser);
             setIsAuthenticated(true);
+
+            // Also notify other tabs via BroadcastChannel
+            bc.notifyAuthUpdate({
+              isAuthenticated: true,
+              user: customUser,
+              session: authState.session,
+              emailVerified: customUser?.email_verified
+            });
           } else {
             setUser(null);
             setSession(null);
             setIsAuthenticated(false);
+
+            // Also notify other tabs via BroadcastChannel
+            bc.notifyAuthUpdate({
+              isAuthenticated: false
+            });
           }
         } catch (error) {
           console.error('Error parsing auth state from storage:', error);
@@ -154,7 +203,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    return () => {
+      bc.unsubscribe('AUTH_UPDATE', handleBroadcastMessage);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   // Sign up function
@@ -234,6 +287,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null)
     setSession(null)
     setIsAuthenticated(false)
+
+    // Notify other tabs of logout via BroadcastChannel
+    const bc = getBroadcastChannelManager();
+    bc.notifyLogout();
 
     // Clear auth state in localStorage
     localStorage.removeItem('auth-state');
@@ -315,6 +372,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(customUser);
         setIsAuthenticated(true);
 
+        // Notify other tabs of the auth update via BroadcastChannel
+        const bc = getBroadcastChannelManager();
+        bc.notifyAuthUpdate({
+          isAuthenticated: true,
+          user: customUser,
+          session: data.session,
+          emailVerified: customUser?.email_verified
+        });
+
         // Update verification state
         setEmailVerificationState(prev => ({
           ...prev,
@@ -343,6 +409,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (refreshedUser) {
           const customUser = supabaseUserToCustomUser(refreshedUser);
           setUser(customUser);
+
+          // Notify other tabs of the auth update via BroadcastChannel
+          const bc = getBroadcastChannelManager();
+          bc.notifyAuthUpdate({
+            isAuthenticated: true,
+            user: customUser,
+            session: null,
+            emailVerified: customUser?.email_verified
+          });
         }
 
         // Hide success message after 3 seconds

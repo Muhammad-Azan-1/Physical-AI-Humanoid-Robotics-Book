@@ -1,124 +1,96 @@
 # Authentication Setup Guide
 
-This document provides instructions for setting up and using the authentication system in the Physical AI & Humanoid Robotics book.
+This document explains how to set up and configure the authentication system for the Physical AI & Humanoid Robotics educational platform.
 
 ## Overview
 
-The authentication system is built using Supabase for backend services and React Context for state management. It provides user registration, login, profile management, and content protection features.
+The authentication system provides secure user registration, login, and email verification functionality. It includes cross-tab synchronization to ensure consistent authentication state across all open browser tabs.
 
-## Prerequisites
+## Features
 
-- A Supabase account
-- Environment variables configured for your Supabase project
+### Cross-Tab Authentication Synchronization
+- Authentication state is synchronized across all open browser tabs using BroadcastChannel API
+- Fallback to localStorage events for broader browser compatibility
+- When a user logs in, logs out, or verifies their email in one tab, all other tabs automatically update
+
+### Email Verification
+- Users must verify their email address after registration
+- Verification tokens expire after 5 minutes for security
+- Automatic authentication after successful verification
+
+### Secure Token Management
+- HTTP-only cookies for secure token storage
+- Automatic token refresh
+- Session validation and cleanup
 
 ## Configuration
 
 ### Environment Variables
 
-Create a `.env` file in the root of your project with the following variables:
+Set these environment variables in your `.env` file:
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
 ```
 
-> Note: The `SUPABASE_SERVICE_ROLE_KEY` is only needed for server-side operations and should be kept secure.
+### Docusaurus Configuration
 
-### Supabase Setup
+In `docusaurus.config.js`, add the Supabase configuration to `customFields`:
 
-1. Create a new Supabase project at [supabase.com](https://supabase.com)
-2. Get your project URL and API keys from Project Settings → API
-3. Enable email authentication in Authentication → Settings
-4. Add your site URLs to redirect URLs for development and production
-
-## Components
-
-### AuthContext and useAuth
-
-The `AuthContext` provides global authentication state management. Use the `useAuth` hook to access authentication functions throughout your application:
-
-```tsx
-import { useAuth } from '/src/hooks/useAuth';
-
-const MyComponent = () => {
-  const { user, loading, isAuthenticated, signIn, signOut } = useAuth();
-
-  if (loading) return <div>Loading...</div>;
-
-  return (
-    <div>
-      {isAuthenticated ? (
-        <div>
-          <p>Welcome, {user?.email}!</p>
-          <button onClick={signOut}>Sign Out</button>
-        </div>
-      ) : (
-        <div>Please sign in</div>
-      )}
-    </div>
-  );
+```js
+module.exports = {
+  // ... other config
+  customFields: {
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    // ... other custom fields
+  },
 };
 ```
 
-### ProtectedRoute
+## Implementation Details
 
-Use `ProtectedRoute` to restrict access to certain components:
+### Components
 
-```tsx
-import ProtectedRoute from '/src/components/auth/ProtectedRoute';
+- `AuthContext`: Manages authentication state across the application
+- `BroadcastChannelManager`: Handles cross-tab communication
+- `AuthStateSync`: Synchronizes authentication state across tabs
+- `CookieManager`: Manages authentication-related cookies
 
-const PremiumContent = () => (
-  <ProtectedRoute requiredRole="premium">
-    <div>Premium content here</div>
-  </ProtectedRoute>
-);
-```
+### Key Files
 
-## Pages
+- `src/contexts/AuthContext.tsx`: Main authentication state management
+- `src/components/auth/BroadcastChannelManager.ts`: Cross-tab communication
+- `src/components/auth/AuthStateSync.tsx`: Authentication state synchronization
+- `src/components/auth/CookieManager.ts`: Cookie management utilities
+- `src/pages/auth/callback.tsx`: Handles authentication callbacks and email verification
+- `src/pages/signup.tsx`: User registration flow
 
-### Sign Up (`/signup`)
+## Security Considerations
 
-Allows new users to create an account with email and password.
-
-### Sign In (`/signin`)
-
-Allows existing users to log in with their credentials.
-
-### Profile (`/profile`)
-
-Allows authenticated users to view and update their profile information.
-
-### Reset Password (`/reset-password`)
-
-Handles password reset functionality.
-
-## Security Features
-
-- Password strength requirements
-- Secure session management
-- Role-based access control
-- Input validation
-- Protection against common vulnerabilities
-
-## Testing
-
-Unit tests for authentication components can be found in the `src/components/auth/__tests__` directory.
+- All authentication tokens are stored securely using HTTP-only cookies where possible
+- Verification tokens have a 5-minute expiration window
+- Cross-tab communication is validated to prevent unauthorized state changes
+- Input sanitization is performed on all user-provided data
+- Session validation is performed on each request
 
 ## Troubleshooting
 
-### Common Issues
+### Cross-Tab Synchronization Not Working
 
-- **Session not persisting**: Ensure your Supabase project URL and keys are correct
-- **Redirects not working**: Check that your redirect URLs are properly configured in Supabase
-- **Email verification not working**: Verify that email templates are set up in Supabase
+1. Check if the browser supports BroadcastChannel API
+2. Verify that all tabs are on the same origin
+3. Check browser console for errors related to cross-tab communication
 
-### Error Messages
+### Email Verification Issues
 
-- "Invalid credentials": Check email and password for correctness
-- "Password does not meet requirements": Ensure password meets complexity requirements
-- "Email already in use": Use a different email or reset existing account password
+1. Verify that the verification link is not expired (5-minute window)
+2. Check that the Supabase configuration is correct
+3. Ensure the email verification settings are properly configured in Supabase dashboard
 
-## Development
+### Session Issues
 
-When developing locally, ensure you have the proper environment variables set and that your Supabase project allows `localhost` as a redirect URL.
+1. Clear browser cookies and cache if experiencing session problems
+2. Verify that the session timeout settings are configured correctly
+3. Check that the token refresh mechanism is working properly

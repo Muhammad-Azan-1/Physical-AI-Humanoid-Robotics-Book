@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from google import genai
 from pinecone import Pinecone, ServerlessSpec
-from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput
+from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput ,
 from dotenv import load_dotenv
 import os
 from uuid import uuid4
