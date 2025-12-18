@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from google import genai
 from pinecone import Pinecone, ServerlessSpec
-from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput ,
+from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput , InputGuardrailTripwireTriggered
 from dotenv import load_dotenv
 import os
 from uuid import uuid4
@@ -50,11 +50,8 @@ myIndex = pc.Index(index)
 
 
 
-
-#! -- the below code is only for addinng data into vector DB this work will be done only one time
-
 #? ---------------------------------------------------------
-#? 1. Chunking Function
+#? 1. Book content into chunks
 #? ---------------------------------------------------------
 
 def text_into_chunks(text, maxlen=30):
@@ -72,76 +69,71 @@ def text_into_chunks(text, maxlen=30):
 
 
 #? ---------------------------------------------------------
-#? 2. Load Content
+#? 2. Upload Book content to Pinecone
 #? ---------------------------------------------------------
 
+def upload_book_to_pinecone(client, pinecone_index, file_name="book-content.md"):
+    """
+    Reads the book content, chunks it, embeds it using Gemini, 
+    and uploads vectors to Pinecone.
+    """
+    print("--- Starting Book Upload Process ---")
 
-# Go up 4 levels from src/backend/__init__.py to get to the project root
-# base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-# content_path = os.path.join(base_dir, "book-content.md")
+    # 1. Construct File Path
+    # Go up 4 levels (adjust as needed for your folder structure)
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    content_path = os.path.join(base_dir, file_name)
 
-# if os.path.exists(content_path):
-#     with open(content_path, "r", encoding="utf-8") as f:
-#         content = f.read()
+    # 2. Load Content
+    if not os.path.exists(content_path):
+        print(f"❌ Error: Content file not found at {content_path}")
+        return
+
+    with open(content_path, "r", encoding="utf-8") as f:
+        content = f.read()
     
-#     chunks_list = text_into_chunks(content)
-#     print(f"Successfully loaded {len(chunks_list)} chunks from {content_path}")
-# else:
-#     print(f"Warning: Content file not found at {content_path}")
+    chunks_list = text_into_chunks(content)
+    print(f"✅ Loaded {len(chunks_list)} chunks from file.")
 
+    # 3. Embed and Upsert
+    batch_limit = 100
+    vectors_to_upsert = []
 
+    try:
+        print("Starting embedding and upload...")
+        for i, chunk in enumerate(chunks_list):
+            
+            # --- Gemini API Call ---
+            # Note: Ensure 'client' is passed to this function
+            response = client.models.embed_content( 
+                contents=chunk, 
+                model="text-embedding-004" 
+            )  
+            
+            embedding_vector = response.embeddings[0].values
+            vector_id = str(uuid4())
 
-#? ---------------------------------------------------------
-#? 3. Embedding and Saving (Corrected)
-#? ---------------------------------------------------------
-#? saving the text and the vector of that text into pinecone data base
+            # Prepare record for Pinecone
+            vectors_to_upsert.append((vector_id, embedding_vector, {'text': chunk}))
 
-# Buffer to store vectors before sending to Pinecone (Batching)
-# batch_limit = 100
-# vectors_to_upsert = []
+            # --- Batch Upsert ---
+            if len(vectors_to_upsert) >= batch_limit:
+                pinecone_index.upsert(vectors_to_upsert)
+                vectors_to_upsert = [] # Reset batch
+                print(f"Batch saved. Progress: {i+1}/{len(chunks_list)}")
 
-# try:
+        # --- Final Batch ---
+        if vectors_to_upsert:
+            pinecone_index.upsert(vectors_to_upsert)
+            print("Final batch saved.")
 
-#     count = 0
-#     for i , chunk in enumerate(chunks_list): # looping through in chunk in chunk list
-
-#         # --- Correct Gemini API Call ---
-#         response = Genai_client.models.embed_content( 
-#             contents=chunk, 
-#             model="text-embedding-004" 
-#             )  
+        print("🎉 Success: All data saved in Pinecone.")
         
-#         # -- Correct Response Access ---
-#         embeding_vector = response.embeddings[0].values
-#         vector_id = str(uuid4())
-
-#         # print("Embedding vectors" , embeding_vector)
+    except Exception as e:
+        print(f"❌ Error during upload: {e}")
 
 
-#         #? save the text with a unique id and with its resulting vector in a list fo record later on
-#         #? this is the record (list) will be sent to pinecone
-#         vectors_to_upsert.append((vector_id,  embeding_vector , {'text' : chunk}))
-#         # print("embedding list" , vectors_to_upsert)
-
-#         #? Optimization: Upsert in batches of 100 to avoid network lag
-#         if len(vectors_to_upsert) >= batch_limit:
-#             myIndex.upsert(vectors_to_upsert)
-#             vectors_to_upsert = [] # Reset batch
-#             print(f"Batch saved. Progress: {i+1}/{len(chunks_list)}")
-
-
-#    #? Upsert any remaining vectors in the list
-#     if vectors_to_upsert:
-#         myIndex.upsert(vectors_to_upsert)
-#         print("Final batch saved.")
-
-#     print("Success: All data saved in Pinecone.")
-        
-# except Exception as e:
-#     print(f"Error occurred: {e}")
-
-
-#! ------------------------------------------------------------------
+# upload_book_to_pinecone(Genai_client , myIndex)
 
 
 
@@ -164,7 +156,7 @@ run_config = RunConfig(
 
 
 #? ---------------------------------------------------------
-#? 4. Querying Pinecone
+#? 3. Querying Pinecone
 #? ---------------------------------------------------------
 #? function to retrieve data from pinecone
 
@@ -264,9 +256,18 @@ agent = Agent(
 )
 
 def main():
-    while True:
-        user_input = input("User: ")
-        if(user_input.lower() == "e"):
-            break
-        result = Runner.run_sync(starting_agent=agent , input=user_input ,run_config=run_config)
-        print("Agent: " + result.final_output)
+
+    try:
+        while True:
+            user_input = input("User: ")
+            if(user_input.lower() == "e"):
+                    break
+            result = Runner.run_sync(starting_agent=agent , input=user_input ,run_config=run_config)
+            print("Agent: " + result.final_output)
+
+    except InputGuardrailTripwireTriggered as e :
+        # refusal_message = e.result.output_info
+        print(f"🚫 Blocked by Guardrail: {e}")
+        
+    except Exception as e:
+        print(f"Error: {e}")
