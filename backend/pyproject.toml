@@ -17,7 +17,8 @@ dependencies = [
     "pinecone>=3.1.0",
     "python-multipart==0.0.20",
     "requests>=2.32.3",
-    "google-generativeai>=0.8.3",
+    "google-genai>=0.10.0",
+    "google-generativeai>=0.8.3",  # Keep for backward compatibility
     "openai-agents>=0.6.3",
 ]
 
