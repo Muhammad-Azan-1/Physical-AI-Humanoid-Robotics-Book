@@ -1,26 +1,37 @@
 from fastapi import FastAPI
-import google.generativeai as genai
+import google.genai as genai
 from pinecone import Pinecone, ServerlessSpec
-from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput , InputGuardrailTripwireTriggered
+from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput , InputGuardrailTripwireTriggered  , model_settings ,ModelSettings
 from dotenv import load_dotenv
 import os
 from uuid import uuid4
 from pydantic import BaseModel
+import asyncio
+
 
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
+API_KEY_2 = os.getenv("OPENAI_API_KEY")
 pinecone_api = os.getenv("PINECONE_API_KEY")
 
 
-if not API_KEY:
+if not (API_KEY and API_KEY_2):
     print("API KEY IS NOT FOUND")
+
 
 
 app = FastAPI()
 
-#? Configure Google Generative AI
-genai.configure(api_key=API_KEY)
+
+#? Configure Google Gen AI
+# Check if genai has configure method, otherwise proceed without explicit configuration
+# if hasattr(genai, 'configure'):
+#     genai.configure(api_key=API_KEY)
+
+
+Genai_client = genai.Client(api_key=API_KEY)
+
 
 #? This is the pinecone class it connects our script to pinecone using your API key.
 pc = Pinecone(api_key=pinecone_api)
@@ -73,7 +84,7 @@ def text_into_chunks(text, maxlen=30):
 
 def upload_book_to_pinecone(client, pinecone_index, file_name="book-content.md"):
     """
-    Reads the book content, chunks it, embeds it using Gemini, 
+    Reads the book content, chunks it, embeds it using Gemini,
     and uploads vectors to Pinecone.
     """
     print("--- Starting Book Upload Process ---")
@@ -90,7 +101,7 @@ def upload_book_to_pinecone(client, pinecone_index, file_name="book-content.md")
 
     with open(content_path, "r", encoding="utf-8") as f:
         content = f.read()
-    
+
     chunks_list = text_into_chunks(content)
     print(f"✅ Loaded {len(chunks_list)} chunks from file.")
 
@@ -101,15 +112,32 @@ def upload_book_to_pinecone(client, pinecone_index, file_name="book-content.md")
     try:
         print("Starting embedding and upload...")
         for i, chunk in enumerate(chunks_list):
-            
+
             # --- Gemini API Call ---
-            # Note: Ensure 'client' is passed to this function
-            response = client.models.embed_content( 
-                contents=chunk, 
-                model="text-embedding-004" 
-            )  
-            
-            embedding_vector = response.embeddings[0].values
+            try:
+                if Genai_client and hasattr(Genai_client, 'models'):
+                    # Use the client if available
+                    response = Genai_client.models.embed_content(
+                        contents=chunk,
+                        model="text-embedding-004"
+                    )
+                else:
+                    # Fallback to direct genai module usage
+                    response = genai.embed_content(
+                        model="text-embedding-004",
+                        content=chunk
+                    )
+            except Exception as embed_error:
+                print(f"❌ Embedding error for chunk {i}: {embed_error}")
+                continue  # Skip this chunk and continue with others
+
+            # Extract embedding values
+            if hasattr(response, 'embeddings') and len(response.embeddings) > 0:
+                embedding_vector = response.embeddings[0].values
+            else:
+                # Handle case where response format is different
+                embedding_vector = response.embedding if hasattr(response, 'embedding') else response
+
             vector_id = str(uuid4())
 
             # Prepare record for Pinecone
@@ -127,7 +155,7 @@ def upload_book_to_pinecone(client, pinecone_index, file_name="book-content.md")
             print("Final batch saved.")
 
         print("🎉 Success: All data saved in Pinecone.")
-        
+
     except Exception as e:
         print(f"❌ Error during upload: {e}")
 
@@ -138,20 +166,20 @@ def upload_book_to_pinecone(client, pinecone_index, file_name="book-content.md")
 
 #! Start from here
 
-external_client = AsyncOpenAI(
-    base_url="https://generativelanguage.googleapis.com/v1beta/",
-    api_key=API_KEY,
-)
+# external_client = AsyncOpenAI(
+#     base_url="https://generativelanguage.googleapis.com/v1beta/",
+#     api_key=API_KEY,
+# )
 
-model = OpenAIChatCompletionsModel(
-    model="gemini-2.5-flash",
-    openai_client=external_client,
-)
+# model = OpenAIChatCompletionsModel(
+#     model="gemini-2.5-flash",
+#     openai_client=external_client,
+# )
 
-run_config = RunConfig(
-    model=model,
-    model_provider = external_client,
-)
+# run_config = RunConfig(
+#     model="gpt-4o-mini",
+#     # model_provider = external_client,
+# )
 
 
 #? ---------------------------------------------------------
@@ -160,19 +188,20 @@ run_config = RunConfig(
 #? function to retrieve data from pinecone
 
 @function_tool
-async def query_pinecone(query_text, top_k=5):
+async def query_pinecone(query_text: str, top_k: int = 5):
     """
     Converts user query to a Gemini vector and searches Pinecone.
     """
     try:
+        print(f"🔍 PINECONE SEARCH: '{query_text}'")
         # 1. Convert User Query to Vector using Gemini
-        response = genai.embed_content(
+        response = Genai_client.models.embed_content(
             model="text-embedding-004",
-            content=query_text
+            contents=query_text
         )
 
         # 2. Extract the vector (list of 768 floats)
-        query_vector = response['embedding']
+        query_vector = response.embeddings[0].values
 
         # 3. Search Pinecone
         query_result = myIndex.query(
@@ -184,6 +213,7 @@ async def query_pinecone(query_text, top_k=5):
         # 4. Extract text from matches
         matches = query_result['matches']
         retrieved_chunks = [match['metadata']['text'] for match in matches]
+        print(f"✅ PINECONE FOUND: {len(retrieved_chunks)} chunks")
 
         return retrieved_chunks
 
@@ -203,28 +233,39 @@ class InputClassification(BaseModel):
 input_guardrail_agent = Agent(
     name="Input Guardrail Agent",
     instructions="""
-    You are a strict content moderator for a 'Physical AI & Humanoid Robotics' book assistant.
-    Analyze the user's input and classify it.
-
-    **ALLOWED TOPICS (is_off_topic = False):**
-    1. **Chit-Chat:** Greetings, "Who are you?", "How are you?", "Goodbye".
-    2. **Domain Knowledge:** Any question related to AI, Robotics, Physics, Engineering, Mechanics, Sensors, or the book content itself.
-
-    **FORBIDDEN TOPICS (is_off_topic = True):**
-    1. **General Knowledge:** History, geography (e.g., "Capital of France"), celebrities, movies.
-    2. **Unrelated Tasks:** Writing poems about cats, fixing generic Python code unrelated to robotics, cooking recipes.
-
-    **OUTPUT RULES:**
-    - If the input is ALLOWED, set `is_off_topic` to False. Set `reason` to "Allowed".
-    - If the input is FORBIDDEN, set `is_off_topic` to True. Set `reason` to a polite refusal message (e.g., "I can only answer questions about Physical AI and Robotics.").
+    Role: VERY PERMISSIVE content filter. Your job is ONLY to block OBVIOUS spam.
+    
+    **DEFAULT: ALLOW EVERYTHING (is_off_topic=False)**
+    - When in doubt, ALLOW IT.
+    - If it could POSSIBLY relate to tech/science/engineering, ALLOW IT.
+    
+    **BLOCK ONLY THESE (is_off_topic=True):**
+    - Cooking/recipes
+    - Weather questions
+    - Jokes/riddles/poems
+    - Politics/elections
+    - Celebrities/entertainment
+    - "Write me an essay/story/email"
+    - Personal advice (relationships, health)
+    
+    **ALWAYS ALLOW (is_off_topic=False):**
+    - ANY technical term or acronym (VLA, LLM, SLAM, IMU, etc.)
+    - ANY question with words: AI, robot, physics, sensor, motor, control, algorithm, neural, machine
+    - "What is [anything]?" - ALLOW (let Pinecone decide)
+    - "Explain [anything]?" - ALLOW (let Pinecone decide)
+    - Greetings (Hi, Hello, Who are you)
+    
+    **RULE: If uncertain, set is_off_topic=False**
     """,
-    output_type=InputClassification
+    output_type=InputClassification,
+    model="gpt-4.1-nano",
+    model_settings=ModelSettings(max_tokens=60)
 ) 
 
 
 @input_guardrail
 async def input_guardrail_function(context:RunContextWrapper[None] ,  agent : Agent , input: str | list[TResponseInputItem]) ->  GuardrailFunctionOutput:
-   result = await Runner.run(starting_agent=input_guardrail_agent , input=input , run_config=run_config)
+   result = await Runner.run(starting_agent=input_guardrail_agent , input=input)
    print("result of input_quardrail_Agent" , result.final_output)
 
    return GuardrailFunctionOutput(
@@ -238,39 +279,94 @@ async def input_guardrail_function(context:RunContextWrapper[None] ,  agent : Ag
 agent = Agent(
     name="Consumer Agent",
     instructions=""""
-    You are a specialized AI assistant for answering users questions related to the  book "Physical AI & Humanoid Robotics". You have acess to a tool named `query_pinecone` that searches the book's database
-    to retrieve relevant information to answer the user's question.
-
-   ## ** Your Task ** :
-   1. **Greetings & Identity:** If the user asks "Who are you?", "Hello", or similar chit-chat, answer politely without using any tools. Identify yourself as the assistant for this book.
-   2. **Knowledge Questions:** For ANY question requiring information (e.g., "What is physical AI?", "Explain chapter 1"), you MUST use the `query_pinecone` tool to look up the answer.
-   3. **Strict Source of Truth:** - After using the tool, answer the user ONLY using the information returned by the tool.
-   - If the tool returns no results or empty text, apologize and state that the information is not in the book. 
-   - DO NOT use your internal training data to answer general knowledge questions (e.g., if asked "What is the capital of France?", and it's not in the book, you must say you don't know or I can't help you with that).
-
-     """,
-    tools=[query_pinecone],
-    input_guardrails=[input_guardrail_function]
+    You are ARIA, the AI assistant for the 'Physical AI & Humanoid Robotics' book.
     
+    ## Your Task:
+    1. **Greetings:** If user says "Hi", "Hello", "Who are you?" → Answer warmly, introduce yourself as ARIA.
+    
+    2. **ALL Questions:** For ANY question, use the `query_pinecone` tool to search the book.
+    
+    3. **If Pinecone returns results:** Answer using ONLY that information.
+    
+    4. **If Pinecone returns NO results or empty:**
+       Say: "I couldn't find information about that topic in this book. This book focuses on Physical AI, humanoid robotics, sensors, and control systems. Would you like to ask about one of those topics?"
+    
+    5. **NEVER use your training data** for factual answers. Only use Pinecone results.
+    
+    6. **Output:** Plain text only. No markdown (no **, ##, -, etc).
+    
+    7. **Context:** You may receive "Previous conversation" - use it for follow-ups.
+    """,
+    tools=[query_pinecone],
+    input_guardrails=[input_guardrail_function],
+    model="gpt-4o-mini",
+    model_settings=ModelSettings(max_tokens=180)
+
 )
 
-def main():
+
+#* Error handler
+agent2 = Agent(
+    name="Error Handler Agent",
+    instructions="""
+    Role: : You are the friendly, professional voice of the 'Physical AI & Humanoid Robotics' book assistant.
+    **YOUR GOAL:** Explain errors or restrictions politely and briefly.
+    **TASKS:**
+    1. **Off-Topic:** Acknowledge user's topic, gently refuse, and suggest a robotics topic instead.
+    2. **System Error:** Apologize for "temporary interruption" (hide error codes), ask to retry.
+    **TONE:** Warm, personalized, brief.
+    """,
+    model="gpt-4.1-nano",
+    model_settings=ModelSettings(max_tokens=80)
+)
+
+async def main():
+    user_input = ""  # Initialize user_input to avoid reference errors
 
     try:
         while True:
             user_input = input("User: ")
             if(user_input.lower() == "e"):
                     break
-            result = Runner.run_sync(starting_agent=agent , input=user_input ,run_config=run_config)
-            # print("Agent: " + result.final_output) 
+            result = await Runner.run(starting_agent=agent , input=user_input )
+            # print("Agent: " + result.final_output)
 
     except InputGuardrailTripwireTriggered as e :
-        # refusal_message = e.result.output_info
-        print(f"🚫 Blocked by Guardrail: {e}")
+        print(e , 50*"EEE")
+        error_context = f"""
+            The user asked: "{user_input}"
+            The Input Guardrail blocked this because user asked a off topic question
+            Error details (for context only): {e}
+            Please write a polite, personalized response to the user explaining this restriction
+            and suggesting they ask about the Book instead.
+            """
+        # Use the error handler agent to provide a user-friendly message
+        # try:
+        result = await Runner.run(starting_agent=agent2  , input=error_context )
+        # except Exception as handler_error:
+        #     print(f"Error handler also failed: {handler_error}")
+        #     print("Request blocked by content guardrail. Please ask questions related to Physical AI & Humanoid Robotics.")
+
 
     except Exception as e:
-        print(f"Error: {e}")
+        # We tell agent2: "A technical error happened."
+        error_msg = str(e)
+        error_context = f"""
+            A system error occurred.
+            Error details (for context only): {error_msg}
+            The user asked: "{user_input}"
+            Please write a friendly apology explaining that the system is temporarily unavailable.
+            Do not mention the specific error code.
+            """
+        # Use the error handler agent for all other errors
+        # try:
+        result = await Runner.run(starting_agent=agent2  , input=error_context )
+            
+        # except Exception as handler_error:
+        #     print(f"Error handler also failed: {handler_error}")
+        #     print("I'm sorry, I encountered an issue while processing your request. Please try again or rephrase your question.")
+
 
 
 if __name__ == "__main__":
-    main()
+  asyncio.run(main())
