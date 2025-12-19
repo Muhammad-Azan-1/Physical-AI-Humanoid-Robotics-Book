@@ -17,6 +17,7 @@ interface ChatbotState {
   isLoading: boolean;
   sessionId: string | null;
   error: string | null;
+  showWelcomePopup: boolean;
 }
 
 const ChatbotComponent: React.FC = () => {
@@ -27,6 +28,7 @@ const ChatbotComponent: React.FC = () => {
     isLoading: false,
     sessionId: null,
     error: null,
+    showWelcomePopup: true,
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -41,6 +43,16 @@ const ChatbotComponent: React.FC = () => {
         sessionId: savedSessionId
       }));
     }
+
+    // Show welcome popup after 2 seconds
+    const welcomeTimer = setTimeout(() => {
+      const hasSeenWelcome = localStorage.getItem('chatbot-welcome-seen');
+      if (!hasSeenWelcome) {
+        setState(prev => ({ ...prev, showWelcomePopup: true }));
+      }
+    }, 2000);
+
+    return () => clearTimeout(welcomeTimer);
   }, []);
 
   // Scroll to bottom when messages change
@@ -63,8 +75,10 @@ const ChatbotComponent: React.FC = () => {
   const toggleChatbot = () => {
     setState(prev => ({
       ...prev,
-      isOpen: !prev.isOpen
+      isOpen: !prev.isOpen,
+      showWelcomePopup: false
     }));
+    localStorage.setItem('chatbot-welcome-seen', 'true');
   };
 
   const closeChatbot = () => {
@@ -72,6 +86,15 @@ const ChatbotComponent: React.FC = () => {
       ...prev,
       isOpen: false
     }));
+  };
+
+  const dismissWelcomePopup = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setState(prev => ({
+      ...prev,
+      showWelcomePopup: false
+    }));
+    localStorage.setItem('chatbot-welcome-seen', 'true');
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -166,94 +189,154 @@ const ChatbotComponent: React.FC = () => {
 
   return (
     <>
+      {/* Floating Button with Welcome Popup */}
       {!state.isOpen && (
-        <div className="chatbot-icon-container">
+        <div className="chatbot-floating-container">
+          {/* Welcome Popup Bubble */}
+          {state.showWelcomePopup && (
+            <div className="chatbot-welcome-popup">
+              <button
+                className="welcome-popup-close"
+                onClick={dismissWelcomePopup}
+                aria-label="Close welcome message"
+              >
+                ×
+              </button>
+              <div className="welcome-popup-content">
+                <span className="welcome-wave">👋</span>
+                <div className="welcome-text">
+                  <strong>Hi! I'm ARIA 👋</strong>
+                  <p>How can I help you today?</p>
+                </div>
+              </div>
+              <div className="welcome-popup-arrow"></div>
+            </div>
+          )}
+
+          {/* Chat Button */}
           <button
-            className="chatbot-icon"
+            className="chatbot-fab"
             onClick={toggleChatbot}
             aria-label="Open chatbot"
             title="Ask about Physical AI and Robotics"
           >
             <svg
-              className="chatbot-icon-svg"
+              className="chatbot-fab-icon"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
             >
-              <path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clipRule="evenodd" />
+              <path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 2.98.97 4.29L1 23l6.71-1.97C9.02 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-8h2v6h-2V8z" />
             </svg>
           </button>
         </div>
       )}
 
+      {/* Chat Window */}
       {state.isOpen && (
         <div className="chatbot-window">
+          {/* Header */}
           <div className="chatbot-header">
-            <h3>Physical AI Assistant</h3>
-            <button className="close-button" onClick={closeChatbot} aria-label="Close chat">
-              ×
+            <div className="chatbot-header-info">
+              <div className="chatbot-avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 2.98.97 4.29L1 23l6.71-1.97C9.02 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" />
+                </svg>
+              </div>
+              <div className="chatbot-header-text">
+                <h3>ARIA</h3>
+                <span className="chatbot-status">
+                  <span className="status-dot"></span>
+                  Online
+                </span>
+              </div>
+            </div>
+            <button className="chatbot-close-btn" onClick={closeChatbot} aria-label="Close chat">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
             </button>
           </div>
 
+          {/* Messages Area */}
           <div className="chatbot-messages">
             {state.messages.length === 0 ? (
-              <div className="welcome-message">
-                <p>Hello! I'm your Physical AI & Humanoid Robotics assistant.</p>
-                <p>Ask me anything about the book content, and I'll help you find relevant information.</p>
+              <div className="chatbot-empty-state">
+                <div className="empty-state-icon">🤖</div>
+                <h4>Hi! I'm ARIA</h4>
+                <p>Your Physical AI & Robotics assistant. Ask me anything about the book!</p>
+                <div className="suggestion-chips">
+                  <button onClick={() => setState(prev => ({ ...prev, inputText: 'What is Physical AI?' }))}>
+                    What is Physical AI?
+                  </button>
+                  <button onClick={() => setState(prev => ({ ...prev, inputText: 'Tell me about humanoid robots' }))}>
+                    Humanoid robots
+                  </button>
+                  <button onClick={() => setState(prev => ({ ...prev, inputText: 'Explain sensors in robotics' }))}>
+                    Sensors
+                  </button>
+                </div>
               </div>
             ) : (
               state.messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`message-bubble ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+                  className={`chat-message ${message.role === 'user' ? 'user-msg' : 'assistant-msg'}`}
                 >
-                  <div className="message-content">{message.content}</div>
-                  <div className="message-timestamp">
-                    {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {message.role === 'assistant' && (
+                    <div className="message-avatar">🤖</div>
+                  )}
+                  <div className="message-bubble">
+                    <div className="message-text">{message.content}</div>
+                    <div className="message-time">
+                      {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
                 </div>
               ))
             )}
             {state.isLoading && (
-              <div className="message-bubble assistant-message">
-                <div className="typing-indicator">
-                  <span className="dot"></span>
-                  <span className="dot"></span>
-                  <span className="dot"></span>
+              <div className="chat-message assistant-msg">
+                <div className="message-avatar">🤖</div>
+                <div className="message-bubble typing-bubble">
+                  <div className="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="input-area">
-            <div className="input-container">
+          {/* Input Area */}
+          <div className="chatbot-input-area">
+            <div className="input-wrapper">
               <textarea
                 ref={textareaRef}
-                className="message-input"
+                className="chat-input"
                 value={state.inputText}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about Physical AI and Robotics..."
+                placeholder="Type your question..."
                 disabled={state.isLoading}
                 rows={1}
                 maxLength={10000}
               />
               <button
-                className={`send-button ${state.inputText.trim() ? 'active' : ''}`}
+                className={`send-btn ${state.inputText.trim() ? 'active' : ''}`}
                 onClick={handleSendClick}
                 disabled={state.isLoading || !state.inputText.trim()}
                 aria-label="Send message"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="send-icon"
-                >
-                  <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                 </svg>
               </button>
+            </div>
+            <div className="input-footer">
+              <span>Powered by AI</span>
             </div>
           </div>
         </div>

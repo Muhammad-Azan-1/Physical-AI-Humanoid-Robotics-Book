@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { validateEmail, validatePassword } from '../../utils/validation';
-import ErrorMessage from '../common/ErrorMessage';
-import LoadingSpinner from '../common/LoadingSpinner';
+import './auth.css';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -18,42 +17,34 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup, onFo
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { signIn } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
 
-    if (type === 'checkbox' && name === 'remember') {
-      setRememberMe(checked);
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-
-      // Clear error when user starts typing
-      if (errors[name]) {
-        setErrors(prev => {
-          const newErrors = { ...prev };
-          delete newErrors[name];
-          return newErrors;
-        });
-      }
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
   };
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Validate email
     const emailValidation = validateEmail(formData.email);
     if (!emailValidation.isValid) {
       newErrors.email = emailValidation.message || '';
     }
 
-    // Validate password
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.message || '';
@@ -67,12 +58,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup, onFo
     e.preventDefault();
 
     if (!validateForm()) {
-      // Focus on the first error field
-      const firstErrorField = Object.keys(errors)[0];
-      if (firstErrorField) {
-        const element = document.getElementById(firstErrorField);
-        if (element) element.focus();
-      }
       return;
     }
 
@@ -81,22 +66,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup, onFo
 
     try {
       await signIn(formData.email, formData.password);
-
-      // On success, call the success callback
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
       setGeneralError(error.message || 'An error occurred during login. Please try again.');
-      // Focus back to the form for screen readers
-      const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
-      if (submitButton) submitButton.focus();
     } finally {
       setLoading(false);
     }
   };
 
-  // Focus the email field when the component mounts
   useEffect(() => {
     const emailInput = document.getElementById('email') as HTMLInputElement;
     if (emailInput) {
@@ -105,99 +84,98 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup, onFo
   }, []);
 
   return (
-    <div className="login-form-container" role="region" aria-label="Login form">
-      <h2 tabIndex={-1}>Sign In</h2>
+    <div className="auth-form-wrapper">
+      {generalError && (
+        <div className="auth-alert">{generalError}</div>
+      )}
 
-      {generalError && <ErrorMessage message={generalError} />}
-
-      <form onSubmit={handleSubmit} className="login-form" noValidate>
-        <div className="form-group">
-          <label htmlFor="email">Email *</label>
+      <form onSubmit={handleSubmit} className="auth-form" noValidate>
+        <div className="auth-form-group">
+          <label htmlFor="email" className="auth-label">Email address</label>
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`form-control ${errors.email ? 'error' : ''}`}
-            placeholder="your@email.com"
-            aria-describedby={errors.email ? "email-error" : undefined}
+            className={`auth-input ${errors.email ? 'error' : ''}`}
+            placeholder="you@example.com"
             required
           />
-          {errors.email && (
-            <div id="email-error" className="error-message" aria-live="polite">
-              {errors.email}
-            </div>
-          )}
+          {errors.email && <div className="auth-error">{errors.email}</div>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Password *</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`form-control ${errors.password ? 'error' : ''}`}
-            placeholder="Your password"
-            aria-describedby={errors.password ? "password-error" : undefined}
-            required
-          />
-          {errors.password && (
-            <div id="password-error" className="error-message" aria-live="polite">
-              {errors.password}
-            </div>
-          )}
-        </div>
-
-        <div className="form-group form-group--flex">
-          <label htmlFor="remember" className="checkbox-label">
+        <div className="auth-form-group">
+          <label htmlFor="password" className="auth-label">Password</label>
+          <div className="auth-input-wrapper">
             <input
-              type="checkbox"
-              id="remember"
-              name="remember"
-              checked={rememberMe}
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              name="password"
+              value={formData.password}
               onChange={handleChange}
+              className={`auth-input ${errors.password ? 'error' : ''}`}
+              placeholder="Enter your password"
+              style={{ paddingRight: '44px' }}
+              required
             />
-            Remember me
-          </label>
-
-          <button
-            type="button"
-            className="link-button"
-            onClick={onForgotPassword}
-            aria-label="Forgot password? Reset your password"
-          >
-            Forgot password?
-          </button>
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
+          {errors.password && <div className="auth-error">{errors.password}</div>}
         </div>
 
         <button
-          type="submit"
-          className="btn btn-primary btn-block"
-          disabled={loading}
-          aria-busy={loading}
+          type="button"
+          className="auth-forgot-link"
+          onClick={onForgotPassword}
         >
-          {loading ? 'Signing In...' : 'Sign In'}
+          Forgot password?
         </button>
 
-        {loading && <LoadingSpinner size="small" message="Authenticating..." />}
+        <button
+          type="submit"
+          className="auth-submit-btn"
+          disabled={loading}
+        >
+          {loading ? 'Signing in...' : 'Sign in'}
+        </button>
+
+        {loading && (
+          <div className="auth-loading">
+            <div className="auth-spinner"></div>
+            <span>Authenticating...</span>
+          </div>
+        )}
       </form>
 
-      <div className="form-footer">
-        <p>
-          Don't have an account?{' '}
-          <button
-            type="button"
-            className="link-button"
-            onClick={onSwitchToSignup}
-            aria-label="Sign up for a new account"
-          >
-            Sign Up
-          </button>
-        </p>
+      <div className="auth-divider">
+        <span>Don't have an account?</span>
       </div>
+
+      <button
+        type="button"
+        className="auth-secondary-btn"
+        onClick={onSwitchToSignup}
+      >
+        Create an account
+      </button>
     </div>
   );
 };

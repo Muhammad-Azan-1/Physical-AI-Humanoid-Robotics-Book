@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { validateEmail, validatePassword, validatePasswordConfirmation, validateName, validateDisplayName } from '../../utils/validation';
-import ErrorMessage from '../common/ErrorMessage';
-import LoadingSpinner from '../common/LoadingSpinner';
+import { validateEmail, validatePassword, validatePasswordConfirmation } from '../../utils/validation';
+import './auth.css';
 
 interface SignupFormProps {
   onSuccess?: () => void;
@@ -14,14 +13,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToSignin }) 
     email: '',
     password: '',
     confirmPassword: '',
-    username: '',
-    firstName: '',
-    lastName: '',
-    displayName: ''
+    username: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const { signUp } = useAuth();
 
@@ -32,7 +29,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToSignin }) 
       [name]: value
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -45,63 +41,32 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToSignin }) 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Validate email
     const emailValidation = validateEmail(formData.email);
     if (!emailValidation.isValid) {
       newErrors.email = emailValidation.message || '';
     }
 
-    // Validate password
+    if (formData.username.trim() === '') {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+      newErrors.username = 'Only letters, numbers, and underscores allowed';
+    }
+
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
       newErrors.password = passwordValidation.message || '';
     }
 
-    // Validate password confirmation
     const passwordConfirmationValidation = validatePasswordConfirmation(formData.password, formData.confirmPassword);
     if (!passwordConfirmationValidation.isValid) {
       newErrors.confirmPassword = passwordConfirmationValidation.message || '';
     }
 
-    // Validate first name if provided
-    if (formData.firstName) {
-      const firstNameValidation = validateName(formData.firstName);
-      if (!firstNameValidation.isValid) {
-        newErrors.firstName = firstNameValidation.message || '';
-      }
-    }
-
-    // Validate last name if provided
-    if (formData.lastName) {
-      const lastNameValidation = validateName(formData.lastName);
-      if (!lastNameValidation.isValid) {
-        newErrors.lastName = lastNameValidation.message || '';
-      }
-    }
-
-    // Validate username
-    if (formData.username.trim() === '') {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    } else if (formData.username.length > 30) {
-      newErrors.username = 'Username must be less than 30 characters';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
-    }
-
-    // Validate display name if provided
-    if (formData.displayName) {
-      const displayNameValidation = validateDisplayName(formData.displayName);
-      if (!displayNameValidation.isValid) {
-        newErrors.displayName = displayNameValidation.message || '';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,154 +82,131 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToSignin }) 
       await signUp(
         formData.email,
         formData.password,
-        {
-          username: formData.username,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          displayName: formData.displayName
-        }
+        { username: formData.username }
       );
 
-      // On success, call the success callback
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
       console.error('Signup error:', error);
-      setGeneralError(error.message || 'An error occurred during registration. Please try again.');
+      setGeneralError(error.message || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="signup-form-container">
-      <h2>Create Account</h2>
+    <div className="auth-form-wrapper">
+      {generalError && (
+        <div className="auth-alert">{generalError}</div>
+      )}
 
-      {generalError && <ErrorMessage message={generalError} />}
-
-      <form onSubmit={handleSubmit} className="signup-form">
-        <div className="form-group">
-          <label htmlFor="email">Email *</label>
+      <form onSubmit={handleSubmit} className="auth-form" noValidate>
+        <div className="auth-form-group">
+          <label htmlFor="email" className="auth-label">Email address</label>
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`form-control ${errors.email ? 'error' : ''}`}
-            placeholder="your@email.com"
+            className={`auth-input ${errors.email ? 'error' : ''}`}
+            placeholder="you@example.com"
           />
-          {errors.email && <div className="error-message">{errors.email}</div>}
+          {errors.email && <div className="auth-error">{errors.email}</div>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Password *</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className={`form-control ${errors.password ? 'error' : ''}`}
-            placeholder="At least 8 characters"
-          />
-          {errors.password && <div className="error-message">{errors.password}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Confirm Password *</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={`form-control ${errors.confirmPassword ? 'error' : ''}`}
-            placeholder="Re-enter your password"
-          />
-          {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="username">Username *</label>
+        <div className="auth-form-group">
+          <label htmlFor="username" className="auth-label">Username</label>
           <input
             type="text"
             id="username"
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className={`form-control ${errors.username ? 'error' : ''}`}
+            className={`auth-input ${errors.username ? 'error' : ''}`}
             placeholder="Choose a username"
           />
-          {errors.username && <div className="error-message">{errors.username}</div>}
+          {errors.username && <div className="auth-error">{errors.username}</div>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="firstName">First Name (optional)</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            className={`form-control ${errors.firstName ? 'error' : ''}`}
-            placeholder="Your first name"
-          />
-          {errors.firstName && <div className="error-message">{errors.firstName}</div>}
+        <div className="auth-form-group">
+          <label htmlFor="password" className="auth-label">Password</label>
+          <div className="auth-input-wrapper">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`auth-input ${errors.password ? 'error' : ''}`}
+              placeholder="At least 8 characters"
+              style={{ paddingRight: '44px' }}
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
+          {errors.password && <div className="auth-error">{errors.password}</div>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="lastName">Last Name (optional)</label>
+        <div className="auth-form-group">
+          <label htmlFor="confirmPassword" className="auth-label">Confirm password</label>
           <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
             onChange={handleChange}
-            className={`form-control ${errors.lastName ? 'error' : ''}`}
-            placeholder="Your last name"
+            className={`auth-input ${errors.confirmPassword ? 'error' : ''}`}
+            placeholder="Re-enter your password"
           />
-          {errors.lastName && <div className="error-message">{errors.lastName}</div>}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="displayName">Display Name (optional)</label>
-          <input
-            type="text"
-            id="displayName"
-            name="displayName"
-            value={formData.displayName}
-            onChange={handleChange}
-            className={`form-control ${errors.displayName ? 'error' : ''}`}
-            placeholder="How you'd like to be known"
-          />
-          {errors.displayName && <div className="error-message">{errors.displayName}</div>}
+          {errors.confirmPassword && <div className="auth-error">{errors.confirmPassword}</div>}
         </div>
 
         <button
           type="submit"
-          className="btn btn-primary btn-block"
+          className="auth-submit-btn"
           disabled={loading}
         >
-          {loading ? 'Creating Account...' : 'Sign Up'}
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
 
-        {loading && <LoadingSpinner size="small" message="Creating your account..." />}
+        {loading && (
+          <div className="auth-loading">
+            <div className="auth-spinner"></div>
+            <span>Creating your account...</span>
+          </div>
+        )}
       </form>
 
-      <div className="form-footer">
-        <p>
-          Already have an account?{' '}
-          <button
-            type="button"
-            className="link-button"
-            onClick={onSwitchToSignin}
-          >
-            Sign In
-          </button>
-        </p>
+      <div className="auth-divider">
+        <span>Already have an account?</span>
       </div>
+
+      <button
+        type="button"
+        className="auth-secondary-btn"
+        onClick={onSwitchToSignin}
+      >
+        Sign in
+      </button>
     </div>
   );
 };
