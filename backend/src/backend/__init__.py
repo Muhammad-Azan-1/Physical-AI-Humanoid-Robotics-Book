@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from google import genai
+import google.generativeai as genai
 from pinecone import Pinecone, ServerlessSpec
 from agents import Agent , Runner , RunConfig , AsyncOpenAI , OpenAIChatCompletionsModel  , function_tool  , input_guardrail , RunContextWrapper , TResponseInputItem , GuardrailFunctionOutput , InputGuardrailTripwireTriggered
 from dotenv import load_dotenv
@@ -19,9 +19,8 @@ if not API_KEY:
 
 app = FastAPI()
 
-#? Google Client for embeddings
-Genai_client = genai.Client(api_key=API_KEY)
-
+#? Configure Google Generative AI
+genai.configure(api_key=API_KEY)
 
 #? This is the pinecone class it connects our script to pinecone using your API key.
 pc = Pinecone(api_key=pinecone_api)
@@ -167,14 +166,14 @@ async def query_pinecone(query_text, top_k=5):
     """
     try:
         # 1. Convert User Query to Vector using Gemini
-        response = Genai_client.models.embed_content(
+        response = genai.embed_content(
             model="text-embedding-004",
-            contents=query_text
+            content=query_text
         )
 
         # 2. Extract the vector (list of 768 floats)
-        query_vector = response.embeddings[0].values
-        
+        query_vector = response['embedding']
+
         # 3. Search Pinecone
         query_result = myIndex.query(
             vector=query_vector,   # Send the Gemini vector
@@ -185,7 +184,7 @@ async def query_pinecone(query_text, top_k=5):
         # 4. Extract text from matches
         matches = query_result['matches']
         retrieved_chunks = [match['metadata']['text'] for match in matches]
-        
+
         return retrieved_chunks
 
     except Exception as e:
@@ -263,7 +262,7 @@ def main():
             if(user_input.lower() == "e"):
                     break
             result = Runner.run_sync(starting_agent=agent , input=user_input ,run_config=run_config)
-            print("Agent: " + result.final_output)
+            # print("Agent: " + result.final_output) 
 
     except InputGuardrailTripwireTriggered as e :
         # refusal_message = e.result.output_info
