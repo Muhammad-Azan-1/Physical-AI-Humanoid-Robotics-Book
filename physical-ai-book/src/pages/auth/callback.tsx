@@ -43,9 +43,25 @@ const AuthCallbackPage: React.FC = () => {
                 // Check for access_token in the hash (this is how Supabase returns the session)
                 const accessToken = hashParams.get('access_token');
                 const refreshToken = hashParams.get('refresh_token');
+                const type = hashParams.get('type');
+
+                // IMPORTANT: Check for recovery type FIRST - redirect to reset-password WITHOUT consuming tokens
+                // This allows reset-password page to set session and prompt for new password
+                if (type === 'recovery' && accessToken) {
+                    setStatus('success');
+                    setMessage('Password reset verified! Redirecting to set your new password...');
+
+                    // Redirect to reset-password WITH the full hash so it can set session and update password
+                    const redirectUrl = `${siteConfig.baseUrl}reset-password${window.location.hash}`;
+
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                    return;
+                }
 
                 if (accessToken && refreshToken) {
-                    // Set the session from the URL tokens
+                    // Set the session from the URL tokens (for non-recovery flows)
                     const { data, error: sessionError } = await supabase.auth.setSession({
                         access_token: accessToken,
                         refresh_token: refreshToken
@@ -94,9 +110,8 @@ const AuthCallbackPage: React.FC = () => {
                     }
                 }
 
-                // Check for the type parameter (could be signup, recovery, etc.)
-                const type = hashParams.get('type');
-
+                // Check for the type parameter (could be signup, email_change)
+                // Note: recovery type is handled earlier before session is set
                 if (type === 'signup' || type === 'email_change') {
                     // Check current session
                     const { data: { session } } = await supabase.auth.getSession();
@@ -135,19 +150,6 @@ const AuthCallbackPage: React.FC = () => {
                         }, 2000);
                         return;
                     }
-                }
-
-                if (type === 'recovery') {
-                    setStatus('success');
-                    setMessage('Password reset verified! Redirecting to reset your password...');
-
-                    // Use a safe redirect URL for password reset
-                    const redirectUrl = getValidRedirectUrl(`${siteConfig.baseUrl}reset-password`, `${siteConfig.baseUrl}reset-password`);
-
-                    setTimeout(() => {
-                        window.location.href = redirectUrl;
-                    }, 2000);
-                    return;
                 }
 
                 // If we get here without tokens, try to get the existing session

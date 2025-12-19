@@ -40,3 +40,8 @@ For detailed setup instructions, see the [Authentication Setup Guide](physical-a
 
 
 # we need to correct the auth and also need to also continue the RAG  CHATBOT
+
+// to run backend uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+
+INFO:     127.0.0.1:55426 - "POST /api/v1/ HTTP/1.1" 500 Internal Server Error

@@ -1,11 +1,15 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import LoginForm from '../components/auth/LoginForm';
-import Link from '@docusaurus/Link';
 import { getValidRedirectUrl } from '../utils/authHelpers';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import '../components/auth/auth.css';
 
 const SigninPage: React.FC = () => {
-  // Get return URL from query parameters
+  const { siteConfig } = useDocusaurusContext();
+  const signupUrl = `${siteConfig.baseUrl}signup`;
+  const resetPasswordUrl = `${siteConfig.baseUrl}reset-password`;
+
   const getReturnUrl = (): string | null => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -16,30 +20,25 @@ const SigninPage: React.FC = () => {
   };
 
   const handleLoginSuccess = () => {
-    // Use return URL if available, otherwise default to home page
     const returnUrl = getReturnUrl();
-    const redirectUrl = getValidRedirectUrl(returnUrl, '/');
+    const redirectUrl = getValidRedirectUrl(returnUrl, siteConfig.baseUrl);
     window.location.href = redirectUrl;
   };
 
   return (
     <Layout title="Sign In" description="Sign in to your account for the Physical AI & Humanoid Robotics book">
-      <div className="container margin-vert--lg">
-        <div className="row">
-          <div className="col col--6 col--offset-3">
-            <div className="card">
-              <div className="card__header">
-                <h1>Welcome Back</h1>
-                <p>Sign in to access premium content and track your learning progress</p>
-              </div>
-              <div className="card__body">
-                <LoginForm
-                  onSuccess={handleLoginSuccess}
-                  onSwitchToSignup={() => window.location.href = '/signup'}
-                  onForgotPassword={() => window.location.href = '/reset-password'}
-                />
-              </div>
+      <div className="auth-page">
+        <div className="auth-container">
+          <div className="auth-card">
+            <div className="auth-header">
+              <h1>Welcome back</h1>
+              <p>Sign in to your account</p>
             </div>
+            <LoginForm
+              onSuccess={handleLoginSuccess}
+              onSwitchToSignup={() => window.location.href = signupUrl}
+              onForgotPassword={() => window.location.href = resetPasswordUrl}
+            />
           </div>
         </div>
       </div>
