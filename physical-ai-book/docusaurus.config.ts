@@ -69,6 +69,83 @@ const config: Config = {
         content: 'humanoid robotics, physical ai, ros 2, simulation, reinforcement learning, isaac sim',
       },
     },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'robots',
+        content: 'index, follow',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'googlebot',
+        content: 'index, follow',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:title',
+        content: 'Physical AI & Humanoid Robotics - Comprehensive Guide',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:description',
+        content: 'A comprehensive guide to Physical AI and Humanoid Robotics, covering simulation, ROS 2, and real-world deployment.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:type',
+        content: 'website',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:url',
+        content: 'https://Muhammad-Azan-1.github.io/Physical-AI-Humanoid-Robotics-Book/',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image',
+        content: 'img/docusaurus-social-card.jpg',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:title',
+        content: 'Physical AI & Humanoid Robotics - Comprehensive Guide',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:description',
+        content: 'A comprehensive guide to Physical AI and Humanoid Robotics, covering simulation, ROS 2, and real-world deployment.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'twitter:image',
+        content: 'img/docusaurus-social-card.jpg',
+      },
+    },
   ],
 
   // Even if you don't use internationalization, you can use this field to set

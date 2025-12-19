@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+  title: Physical AI & Humanoid Robotics Chatbot API
+  description: API for the Physical AI & Humanoid Robotics documentation chatbot
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.physicalai-humanoid-book.com
+    description: Production server
+
+paths:
+  /api/chat:
+    post:
+      summary: Send a message to the chatbot and receive a response
+      description: Processes user message with conversation context and returns AI-generated response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response from the chatbot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '504':
+          description: Request timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the chatbot API
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  timestamp:
+                    type: string
+                    example: "2025-12-19T10:00:00Z"
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: The user's message
+          example: "What is physical AI?"
+        sessionId:
+          type: string
+          description: Existing session ID (optional, generates new if not provided)
+          example: "abc123def456"
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - sessionId
+        - timestamp
+      properties:
+        response:
+          type: string
+          description: The AI-generated response
+          example: "Physical AI refers to the integration of artificial intelligence with physical systems..."
+        sessionId:
+          type: string
+          description: The session ID (existing or newly created)
+          example: "abc123def456"
+        timestamp:
+          type: string
+          description: The response timestamp
+          example: "2025-12-19T10:00:00Z"
+        blocked:
+          type: boolean
+          description: Whether the input was blocked by the guardrail
+          example: false
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - errorCode
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Request message cannot be empty"
+        errorCode:
+          type: string
+          description: Error code
+          enum: [INVALID_REQUEST, GUARDRAIL_BLOCKED, AGENT_ERROR, TIMEOUT]
+          example: "INVALID_REQUEST"
+        details:
+          type: string
+          description: Additional error details
+          example: "Message field is required and cannot be empty"

@@ -1,19 +1,200 @@
-# Physical AI & Humanoid Robotics Book Content
+# Authentication Enhancements
 
-**Structure:**
-- **Module 1:** Foundations & ROS 2 Middleware (The Nervous System)
-- **Module 2:** Simulation with Gazebo & Unity (The Digital Twin)
-- **Module 3:** NVIDIA Isaac Platform & Reinforcement Learning (The Brain)
-- **Module 4:** Vision-Language-Action & Humanoid Control (The Mind)
+## Overview
 
-**Target Audience:** Software Engineers, AI Researchers, Robotics Enthusiasts.
-**Goal:** To build a full stack for a Unitree G1 humanoid robot.
+This document describes the enhancements made to the authentication system to fix critical issues and improve user experience.
 
+## Features Implemented
+
+### 1. Cross-Window State Synchronization
+- Authentication state changes in one browser window/tab are automatically synchronized to all other open windows/tabs
+- Uses localStorage events to communicate auth state changes between windows
+- Ensures consistent UI across multiple browser windows when signing in/out or verifying email
+
+### 2. Email Verification Flow
+- Enhanced email verification state management in AuthContext
+- Success feedback mechanism with temporary success messages
+- Proper handling of email verification in different windows/tabs
+
+### 3. Sign Out Confirmation Flow
+- Modal confirmation dialog before signing out with "Cancel" and "Sign Out" options
+- Loading state during signout process
+- Success notification after successful sign out with message "You've been signed out successfully"
+- Proper handling of cancellation (clicking "Cancel" or outside dialog)
+
+### 4. Redirect URL Validation
+- Validates only internal URLs starting with `/` are allowed
+- Prevents open redirect vulnerabilities (no protocol or domain)
+- Prevents redirect loops to auth pages (signin/signup)
+- Implements fallback to default route for invalid URLs
+- Uses `getValidRedirectUrl(url, fallback)` function for safe redirects
+
+### 5. Return URL Functionality
+- Captures current page URL when navigating to authentication pages
+- Stores return URL in query parameters (e.g., `?returnUrl=/docs/module4`)
+- Reads and validates return URL after successful authentication
+- Preserves query parameters when capturing and returning to original URLs
+- Handles case where no return URL is provided (redirects to default)
+- Prevents return URL loops to authentication pages
+
+## Key Functions
+
+### URL Validation
+- `isValidRedirectUrl(url: string): boolean` - Validates if a redirect URL is safe and internal
+- `getValidRedirectUrl(url: string | null | undefined, fallback = '/'): string` - Validates redirect URL and returns a safe fallback if invalid
+- `constructAuthUrlWithReturn(authPath: string, returnUrl?: string): string` - Constructs an authentication URL with the return URL as a query parameter
+
+### Return URL Utilities
+- `captureReturnUrl(): string` - Captures the current page URL to be used as a return URL
+- `getReturnUrlFromParams(): string | null` - Gets the return URL from query parameters
+- `isAuthPage(): boolean` - Checks if the current page is an authentication page
+
+## Components
+
+### Sign Out Flow
+- `SignOutConfirmationDialog` - Modal dialog for sign out confirmation
+- `useSignOutWithConfirmation` - Hook that manages sign out state and logic
+- Updated `UserProfileNavbarItem`, `AuthNavbarItem`, and `LogoutButton` components to use the new confirmation flow
+
+### Cross-Window Synchronization
+- Enhanced `AuthContext` with cross-window state synchronization using localStorage events
+- `enhanceAuthStateHandling` function in `supabase.ts` for cross-window communication
+
+## Security Considerations
+
+1. **Open Redirect Prevention**: All redirect URLs are validated to prevent open redirect vulnerabilities
+   - Only internal URLs starting with `/` are allowed
+   - External protocols (`http:`, `https:`) and domains are blocked
+   - Auth pages are blocked as return URLs to prevent loops
+
+2. **Cross-Window Security**: Auth state is synchronized between windows without exposing sensitive tokens
+   - Authentication tokens are not stored in localStorage for security
+   - Only auth events and non-sensitive session metadata are synchronized
+   - All sensitive operations happen through the secure Supabase client
+
+3. **Input Validation**: All user-provided URLs are validated before use
+   - URL validation occurs on both client and through Supabase's built-in protections
+   - Invalid URLs fall back to safe default routes
+
+4. **Session Management**: Proper session handling across multiple windows/tabs
+   - Sessions are managed securely by Supabase
+   - Cross-window sync only updates UI state, not session tokens
+   - Sign out operations properly clear sessions in all windows
+
+## Error Handling
+
+- Invalid redirect URLs fall back to default routes
+- Authentication errors are properly caught and displayed
+- Network failures during auth operations are handled gracefully
+- Cross-window synchronization errors are logged but don't break functionality# Authentication Setup Guide
+
+This document explains how to set up and configure the authentication system for the Physical AI & Humanoid Robotics educational platform.
+
+## Overview
+
+The authentication system provides secure user registration, login, and email verification functionality. It includes cross-tab synchronization to ensure consistent authentication state across all open browser tabs.
+
+## Features
+
+### Cross-Tab Authentication Synchronization
+- Authentication state is synchronized across all open browser tabs using BroadcastChannel API
+- Fallback to localStorage events for broader browser compatibility
+- When a user logs in, logs out, or verifies their email in one tab, all other tabs automatically update
+
+### Email Verification
+- Users must verify their email address after registration
+- Verification tokens expire after 5 minutes for security
+- Automatic authentication after successful verification
+
+### Secure Token Management
+- HTTP-only cookies for secure token storage
+- Automatic token refresh
+- Session validation and cleanup
+
+## Configuration
+
+### Environment Variables
+
+Set these environment variables in your `.env` file:
+
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+```
+
+### Docusaurus Configuration
+
+In `docusaurus.config.js`, add the Supabase configuration to `customFields`:
+
+```js
+module.exports = {
+  // ... other config
+  customFields: {
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    // ... other custom fields
+  },
+};
+```
+
+## Implementation Details
+
+### Components
+
+- `AuthContext`: Manages authentication state across the application
+- `BroadcastChannelManager`: Handles cross-tab communication
+- `AuthStateSync`: Synchronizes authentication state across tabs
+- `CookieManager`: Manages authentication-related cookies
+
+### Key Files
+
+- `src/contexts/AuthContext.tsx`: Main authentication state management
+- `src/components/auth/BroadcastChannelManager.ts`: Cross-tab communication
+- `src/components/auth/AuthStateSync.tsx`: Authentication state synchronization
+- `src/components/auth/CookieManager.ts`: Cookie management utilities
+- `src/pages/auth/callback.tsx`: Handles authentication callbacks and email verification
+- `src/pages/signup.tsx`: User registration flow
+
+## Security Considerations
+
+- All authentication tokens are stored securely using HTTP-only cookies where possible
+- Verification tokens have a 5-minute expiration window
+- Cross-tab communication is validated to prevent unauthorized state changes
+- Input sanitization is performed on all user-provided data
+- Session validation is performed on each request
+
+## Troubleshooting
+
+### Cross-Tab Synchronization Not Working
+
+1. Check if the browser supports BroadcastChannel API
+2. Verify that all tabs are on the same origin
+3. Check browser console for errors related to cross-tab communication
+
+### Email Verification Issues
+
+1. Verify that the verification link is not expired (5-minute window)
+2. Check that the Supabase configuration is correct
+3. Ensure the email verification settings are properly configured in Supabase dashboard
+
+### Session Issues
+
+1. Clear browser cookies and cache if experiencing session problems
+2. Verify that the session timeout settings are configured correctly
+3. Check that the token refresh mechanism is working properly---
+id: intro
+title: Welcome to Physical AI
+sidebar_position: 1
+slug: /intro
 ---
 
-
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Welcome to Physical AI & Humanoid Robotics
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 ## The Era of Embodied Intelligence
 
@@ -56,6 +237,9 @@ This book is designed as a **hands-on manual**.
 
 Let's begin. The physical world awaits.
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Summary: Welcome
 
 **Goal:** Master the art of **Physical AI**—giving AI agents a body.
@@ -70,13 +254,20 @@ Let's begin. The physical world awaits.
 *   **Humanoid First:** Design for the human world.
 *   **AI Native:** Use learning, not scripting.
 
----
+  </TabItem>
+</Tabs>---
 slug: /module1
 title: Module 1 Overview
 sidebar_label: Overview
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Module 1: The Robotic Nervous System (ROS 2)
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 **Focus:** Middleware for robot control.
 
@@ -96,6 +287,10 @@ By the end of this module, you will be able to:
 *   **Weeks 1-2:** Introduction to Physical AI & Embodied Intelligence.
 *   **Weeks 3-5:** ROS 2 Fundamentals & Architecture.
 
+
+</TabItem>
+<TabItem value="summary" label="Summary">
+
 ## Module 1 Summary
 
 **Focus:** Middleware for robot control (ROS 2).
@@ -106,7 +301,21 @@ By the end of this module, you will be able to:
 *   **Topics:** Channels for data flow.
 *   **URDF:** Format for describing robot geometry.
 
+</TabItem>
+</Tabs>
+---
+id: week1-2
+title: "Weeks 1-2: Introduction to Physical AI"
+sidebar_label: "Weeks 1-2: Intro to Physical AI"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Weeks 1-2: Introduction to Physical AI
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 ## Foundations of Physical AI
 
@@ -163,6 +372,9 @@ Located in the feet and wrists, these measure the interaction forces with the en
 ### 4. The Spatial Awareness: LiDAR
 **LIDAR (Light Detection and Ranging)** sends out laser pulses to create a precise 2D or 3D map of the environment. It is the gold standard for SLAM (Simultaneous Localization and Mapping).
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Summary: Physical AI
 
 **Core Concept:** Embodied Intelligence (AI in the physical world).
@@ -178,7 +390,21 @@ Located in the feet and wrists, these measure the interaction forces with the en
 *   **Force/Torque:** Touch and contact forces.
 *   **LiDAR:** Spatial mapping (SLAM).
 
+  </TabItem>
+</Tabs>
+---
+id: week3-5
+title: "Weeks 3-5: ROS 2 Fundamentals"
+sidebar_label: "Weeks 3-5: ROS 2 Fundamentals"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Weeks 3-5: ROS 2 Fundamentals
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 ## ROS 2 Architecture: The Nervous System
 
@@ -270,9 +496,34 @@ def generate_launch_description():
 *   **Joints:** Connections between links (e.g., elbow hinge).
 
 ```xml
+<robot name="simple_arm">
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.6" radius="0.2"/>
+      </geometry>
+    </visual>
+  </link>
   
+  <link name="forearm">
+    <visual>
+      <geometry>
+        <box size="0.6 0.1 0.1"/>
+      </geometry>
+    </visual>
+  </link>
 
+  <joint name="elbow" type="revolute">
+    <parent link="base_link"/>
+    <child link="forearm"/>
+    <origin xyz="0 0 0.6"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+</robot>
 ```
+
+  </TabItem>
+  <TabItem value="summary" label="Summary">
 
 ## Summary: ROS 2
 
@@ -289,7 +540,21 @@ def generate_launch_description():
 *   **Launch Files:** Start multiple nodes.
 *   **URDF:** XML robot description (Links & Joints).
 
+  </TabItem>
+</Tabs>
+---
+slug: /module2
+title: Module 2 Overview
+sidebar_label: Overview
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Module 2: The Digital Twin (Gazebo & Unity)
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 **Focus:** Physics simulation and environment building.
 
@@ -308,6 +573,9 @@ By the end of this module, you will be able to:
 
 *   **Weeks 6-7:** Robot Simulation with Gazebo & Unity.
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Module 2 Summary
 
 **Focus:** Physics simulation and environment building.
@@ -318,7 +586,21 @@ By the end of this module, you will be able to:
 *   **URDF/SDF:** Formats for describing robots and worlds.
 *   **Unity:** Photorealistic rendering for HRI.
 
+  </TabItem>
+</Tabs>
+---
+id: week6-7
+title: "Weeks 6-7: Robot Simulation with Gazebo"
+sidebar_label: "Weeks 6-7: Robot Simulation"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Weeks 6-7: Robot Simulation with Gazebo
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 ## The Digital Twin Paradigm
 
@@ -364,6 +646,23 @@ URDF is an XML format used by ROS to describe the kinematic tree of a robot (lin
 
 #### Example: A Humanoid Leg Link
 ```xml
+<link name="right_thigh">
+  <visual>
+    <geometry>
+      <cylinder length="0.4" radius="0.05"/>
+    </geometry>
+    <material name="white"/>
+  </visual>
+  <collision>
+    <geometry>
+      <cylinder length="0.4" radius="0.05"/>
+    </geometry>
+  </collision>
+  <inertial>
+    <mass value="2.0"/>
+    <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.005"/>
+  </inertial>
+</link>
 ```
 
 ### SDF (Simulation Description Format)
@@ -382,11 +681,21 @@ We can attach virtual sensors to our URDF model. These publish data to ROS 2 top
 #### LiDAR (Light Detection and Ranging)
 Used for mapping and obstacle avoidance.
 ```xml
-    10
-          360
-          1
-          -3.14
-          3.14
+<gazebo reference="lidar_link">
+  <sensor name="lidar" type="gpu_lidar">
+    <update_rate>10</update_rate>
+    <ray>
+      <scan>
+        <horizontal>
+          <samples>360</samples>
+          <resolution>1</resolution>
+          <min_angle>-3.14</min_angle>
+          <max_angle>3.14</max_angle>
+        </horizontal>
+      </scan>
+    </ray>
+  </sensor>
+</gazebo>
 ```
 
 #### Depth Camera (RGB-D)
@@ -407,6 +716,9 @@ Unity provides the **URDF Importer**, a tool that automatically converts your RO
 
 In the next weeks, we will build a complete simulation environment where our humanoid can walk and interact with objects.
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Summary: Simulation & Digital Twins
 
 **Core Concept:** The Digital Twin allows us to validate AI logic safely before physical deployment.
@@ -422,13 +734,20 @@ In the next weeks, we will build a complete simulation environment where our hum
 *   **Collision Geometry:** Prevents "ghost" robots.
 *   **Virtual Sensors:** LiDAR, Cameras, and IMUs that mimic real hardware.
 
----
+  </TabItem>
+</Tabs>---
 slug: /module3
 title: Module 3 Overview
 sidebar_label: Overview
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Module 3: The AI-Robot Brain (NVIDIA Isaac™)
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 **Focus:** Advanced perception, photorealistic simulation, and reinforcement learning.
 
@@ -452,6 +771,9 @@ By the end of this module, you will be able to:
 
 *   **Weeks 8-10:** NVIDIA Isaac Platform (Sim, ROS, Lab).
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Module 3 Summary
 
 **Focus:** Advanced perception and training (NVIDIA Isaac).
@@ -465,7 +787,27 @@ By the end of this module, you will be able to:
 ### Why It Matters
 Traditional coding (if/else) cannot handle the complexity of the real world. We need AI models trained on massive datasets. Isaac Sim provides the data; Isaac Lab provides the training ground.
 
+  </TabItem>
+</Tabs>
+---
+id: module3-week1-chapter1
+title: "Week 1: Introduction to Module 3"
+sidebar_position: 1
+---
+
+This is the introductory chapter for Module 3. Content to be added later.---
+id: week8-10
+title: "Weeks 8-10: NVIDIA Isaac Platform"
+sidebar_label: "Weeks 8-10: NVIDIA Isaac"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Weeks 8-10: NVIDIA Isaac Platform
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 ## The Isaac Ecosystem: A Deep Dive
 
@@ -561,6 +903,9 @@ A policy trained in a perfect simulation will fail in the real world due to fric
 > **Case Study: Agility Robotics**
 > Agility Robotics uses Isaac Sim to train their humanoid, Digit. By training in simulation, they can test dangerous scenarios (like being pushed or slipping on ice) without risking the $250,000 hardware.
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Summary: The AI-Robot Brain
 
 **Core Concept:** Leveraging GPU acceleration for both Simulation (Training) and Deployment (Inference).
@@ -574,7 +919,21 @@ A policy trained in a perfect simulation will fail in the real world due to fric
 ### Pro Tip
 Don't try to run Isaac Sim on a laptop without a dedicated RTX GPU. It requires significant VRAM (12GB+) to load the USD assets and run the physics engine. For students with lower-end hardware, use **AWS RoboMaker** or **Omniverse Cloud**.
 
+  </TabItem>
+</Tabs>
+---
+slug: /module4
+title: Module 4 Overview
+sidebar_label: Overview
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Module 4: Vision-Language-Action (VLA)
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 **Focus:** The convergence of Large Language Models (LLMs) and Robotics.
 
@@ -599,6 +958,9 @@ By the end of this module, you will be able to:
 *   **Weeks 11-12:** Humanoid Robot Development (Kinematics, Dynamics, RL).
 *   **Week 13:** Conversational Robotics (Whisper, LLMs, VLA).
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Module 4 Summary
 
 **Focus:** Cognitive Robotics (VLA & LLMs).
@@ -612,7 +974,27 @@ By the end of this module, you will be able to:
 ### The Future
 We are moving from "Structured Robotics" (factories) to "Unstructured Robotics" (homes). VLA is the key technology enabling this shift.
 
+  </TabItem>
+</Tabs>
+---
+id: module4-week1-chapter1
+title: "Week 1: Introduction to Module 4"
+sidebar_position: 1
+---
+
+This is the introductory chapter for Module 4. Content to be added later.---
+id: week11-13
+title: "Weeks 11-13: Humanoid Development & VLA"
+sidebar_label: "Weeks 11-13: Humanoid & VLA"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Weeks 11-13: Humanoid Development & VLA
+
+<Tabs>
+  <TabItem value="full" label="Full Content" default>
 
 ## Part 1: Humanoid Robot Development (Weeks 11-12)
 
@@ -731,6 +1113,9 @@ Combine everything!
 4.  **Nav2:** Plans a path avoiding obstacles.
 5.  **Locomotion:** The RL policy moves the legs to follow the path.
 
+  </TabItem>
+  <TabItem value="summary" label="Summary">
+
 ## Summary: Humanoid & VLA
 
 **Goal:** A robot that walks like a human and thinks like an AI.
@@ -744,10 +1129,5 @@ Combine everything!
 ### The "Sim-to-Real" Challenge
 Training these cognitive models requires massive data. We use **Isaac Sim** to generate synthetic "experiences" for the VLA models before deploying them to the real Unitree G1.
 
-
-
----
-
-# Course Compilation Summary
-
-This document contains the complete syllabus and textbook content for the Physical AI & Humanoid Robotics course. It covers the full pipeline from motor control (ROS 2) to simulation (Isaac Sim) and cognitive reasoning (VLA/LLMs).
+  </TabItem>
+</Tabs>

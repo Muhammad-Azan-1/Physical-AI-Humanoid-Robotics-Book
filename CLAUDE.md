@@ -219,6 +219,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 - TypeScript 5.6.2, Docusaurus 3.9.2 + @docusaurus/core, @docusaurus/preset-classic, React 19, Node.js >=20.0 (011-analyze-educational-curriculum)
 - TypeScript 5.6.2, JavaScript ES2022 + @supabase/supabase-js, React 19, Docusaurus 3.9.2 (015-auth-state-sync)
 - Browser localStorage/sessionStorage, HTTP-only cookies for session managemen (015-auth-state-sync)
+- Python 3.11, TypeScript 5.6.2, JavaScript ES2022 + FastAPI, Docusaurus 3.9.2, React 19, @supabase/supabase-js, OpenAI SDK, Pinecone SDK (016-chatbot-integration)
+- Redis (for session storage), Browser localStorage (for session persistence), In-memory conversation history (016-chatbot-integration)
 
 ## Recent Changes
 - 001-homepage-humanoid-book: Added Node.js (LTS), TypeScrip + Docusaurus, Reac
