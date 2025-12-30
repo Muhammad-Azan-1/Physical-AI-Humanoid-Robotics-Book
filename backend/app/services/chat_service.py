@@ -28,6 +28,7 @@ class ChatService:
 
             # Find the backend module - try multiple possible locations
             possible_paths = [
+                Path("/app/src/backend/__init__.py"),  # Railway Docker deployment
                 Path(__file__).parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                 Path(__file__).parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                 Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/
@@ -175,6 +176,7 @@ class ChatService:
                     from pathlib import Path
 
                     possible_paths = [
+                        Path("/app/src/backend/__init__.py"),  # Railway Docker
                         Path(__file__).parent.parent.parent / "src/backend/__init__.py",
                         Path(__file__).parent.parent.parent.parent / "backend/src/backend/__init__.py",
                         Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",
@@ -229,6 +231,7 @@ class ChatService:
 
                     # Find the backend file
                     possible_paths = [
+                        Path("/app/src/backend/__init__.py"),  # Railway Docker
                         Path(__file__).parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                         Path(__file__).parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                         Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/
@@ -299,6 +302,7 @@ Please write a friendly apology explaining there was a temporary system interrup
 
             # Find the backend file - same logic as in __init__
             possible_paths = [
+                Path("/app/src/backend/__init__.py"),  # Railway Docker
                 Path(__file__).parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                 Path(__file__).parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                 Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/

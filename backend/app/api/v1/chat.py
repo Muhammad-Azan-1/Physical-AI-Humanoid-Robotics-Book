@@ -58,6 +58,7 @@ async def chat_endpoint(request: ChatRequest):
 
                 # Find the backend file
                 possible_paths = [
+                    Path("/app/src/backend/__init__.py"),  # Railway Docker
                     Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                     Path(__file__).parent.parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                     Path(__file__).parent.parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/
@@ -104,6 +105,7 @@ async def chat_endpoint(request: ChatRequest):
                     from pathlib import Path
 
                     possible_paths = [
+                        Path("/app/src/backend/__init__.py"),  # Railway Docker
                         Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                         Path(__file__).parent.parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                         Path(__file__).parent.parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/
@@ -194,6 +196,7 @@ async def chat_endpoint(request: ChatRequest):
 
             # Find the backend file
             possible_paths = [
+                Path("/app/src/backend/__init__.py"),  # Railway Docker
                 Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                 Path(__file__).parent.parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                 Path(__file__).parent.parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/
@@ -241,6 +244,7 @@ async def chat_endpoint(request: ChatRequest):
                 from pathlib import Path
 
                 possible_paths = [
+                    Path("/app/src/backend/__init__.py"),  # Railway Docker
                     Path(__file__).parent.parent.parent.parent / "src/backend/__init__.py",  # backend/app/src/backend/
                     Path(__file__).parent.parent.parent.parent.parent / "backend/src/backend/__init__.py",  # project_root/backend/src/backend/
                     Path(__file__).parent.parent.parent.parent.parent / "src/backend/__init__.py",  # project_root/src/backend/
