@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Get API base URL from environment or use default
-const API_BASE_URL = typeof process !== 'undefined' ? (process.env.REACT_APP_API_URL || 'http://localhost:8000') : 'http://localhost:8000';
+// Get API base URL - Production Railway backend
+const API_BASE_URL = 'https://web-production-7aa17.up.railway.app';
 
 // Create axios instance with default settings
 const apiClient = axios.create({
