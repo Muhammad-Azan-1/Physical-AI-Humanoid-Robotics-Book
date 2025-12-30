@@ -44,4 +44,4 @@ For detailed setup instructions, see the [Authentication Setup Guide](physical-a
 // to run backend uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 
-INFO:     127.0.0.1:55426 - "POST /api/v1/ HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:55426 - "POST /api/v1/ HTTP/1.1" 500 Internal Server Error# Railway Deployment Trigger
