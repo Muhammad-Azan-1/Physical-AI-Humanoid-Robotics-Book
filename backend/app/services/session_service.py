@@ -10,11 +10,21 @@ from ..core.config import settings
 class SessionService:
     """
     Service for managing chat sessions with Redis storage
+    Falls back to in-memory storage if Redis is not available
     """
 
     def __init__(self):
-        self.redis_client = redis.from_url(settings.REDIS_URL)
         self.session_expiry = timedelta(hours=settings.SESSION_EXPIRY_HOURS)
+        self._in_memory_sessions = {}  # Fallback storage
+        
+        # Try to connect to Redis, fall back to in-memory if not available
+        try:
+            self.redis_client = redis.from_url(settings.REDIS_URL)
+            self._use_redis = True
+        except Exception as e:
+            print(f"Redis not available, using in-memory storage: {e}")
+            self.redis_client = None
+            self._use_redis = False
 
     async def create_session(self, initial_message: Optional[str] = None) -> str:
         """
@@ -43,22 +53,36 @@ class SessionService:
             }
             session_data["messages"].append(initial_msg)
 
-        await self.redis_client.setex(
-            f"session:{session_id}",
-            int(self.session_expiry.total_seconds()),
-            json.dumps(session_data)
-        )
+        # Store in Redis or in-memory
+        if self._use_redis and self.redis_client:
+            try:
+                await self.redis_client.setex(
+                    f"session:{session_id}",
+                    int(self.session_expiry.total_seconds()),
+                    json.dumps(session_data)
+                )
+            except Exception:
+                self._in_memory_sessions[session_id] = session_data
+        else:
+            self._in_memory_sessions[session_id] = session_data
 
         return session_id
 
     async def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """
-        Retrieve session data from Redis
+        Retrieve session data from Redis or in-memory
         """
-        session_data = await self.redis_client.get(f"session:{session_id}")
-        if session_data:
-            return json.loads(session_data)
-        return None
+        # Try Redis first
+        if self._use_redis and self.redis_client:
+            try:
+                session_data = await self.redis_client.get(f"session:{session_id}")
+                if session_data:
+                    return json.loads(session_data)
+            except Exception:
+                pass
+        
+        # Fall back to in-memory
+        return self._in_memory_sessions.get(session_id)
 
     async def save_message_to_session(self, session_id: str, role: str, content: str):
         """
@@ -88,11 +112,18 @@ class SessionService:
         session_data["lastActiveAt"] = datetime.utcnow().isoformat()
         session_data["expiresAt"] = (datetime.utcnow() + self.session_expiry).isoformat()
 
-        await self.redis_client.setex(
-            f"session:{session_id}",
-            int(self.session_expiry.total_seconds()),
-            json.dumps(session_data)
-        )
+        # Store in Redis or in-memory
+        if self._use_redis and self.redis_client:
+            try:
+                await self.redis_client.setex(
+                    f"session:{session_id}",
+                    int(self.session_expiry.total_seconds()),
+                    json.dumps(session_data)
+                )
+            except Exception:
+                self._in_memory_sessions[session_id] = session_data
+        else:
+            self._in_memory_sessions[session_id] = session_data
 
     async def get_conversation_history(self, session_id: str, limit: int = 50) -> List[ChatHistoryEntry]:
         """
