@@ -22,5 +22,5 @@ ENV PYTHONUNBUFFERED=1
 # Expose port (Railway uses PORT env variable)
 EXPOSE 8000
 
-# Start command
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Start command - uses python -m for reliability
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
